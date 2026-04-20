@@ -62,7 +62,7 @@ Clima histórico: temperatura, viento, etc.
 - Sin API key.
 
 ### 🚀 SpaceX API
-Información de cohetes e imágenes.
+Información de cohetes, lanzamientos e imágenes.
 
 - URL: https://api.spacexdata.com/
 
@@ -251,6 +251,115 @@ Ingesta → Limpieza → Integración → Spark
 - Streamlit
 - APIs REST
 - (Opcional) Airflow
+
+---
+
+## 🐳 11.1 Ejecución con Docker (Ingesta + Plataforma de datos)
+
+Para empezar con una base escalable y orientada a Big Data, el proyecto se puede levantar con Docker Compose.
+
+### Servicios incluidos
+
+- `ingestion`: extracción desde Launch Library, SpaceX y Open-Meteo.
+- `postgres`: base de datos para capas procesadas y analítica.
+- `spark-master`: nodo maestro de Spark.
+- `spark-worker`: nodo worker para procesamiento distribuido.
+
+### Pasos rápidos
+
+1. Copiar variables de entorno:
+
+```bash
+cp .env.example .env
+```
+
+2. Ejecutar ingesta inicial:
+
+```bash
+docker compose run --rm ingestion
+```
+
+3. Levantar plataforma de datos (Spark + PostgreSQL):
+
+```bash
+docker compose up -d postgres spark-master spark-worker
+```
+
+4. Escalar workers Spark:
+
+```bash
+docker compose up -d --scale spark-worker=3 spark-worker
+```
+
+### Modo Big Data (alta extracción)
+
+La ingesta se controla por variables de entorno para aumentar volumen sin tocar código:
+
+- `LAUNCH_LIBRARY_LIMIT` (registros por página)
+- `LAUNCH_LIBRARY_MAX_PAGES` (páginas Launch Library)
+- `SPACEX_LAUNCHES_PAGE_SIZE` (registros por página SpaceX)
+- `SPACEX_LAUNCHES_MAX_PAGES` (páginas SpaceX)
+- `WEATHER_MAX_REQUESTS` (límite de llamadas de clima)
+
+Ejemplo de ejecución masiva:
+
+```bash
+docker compose run --rm \
+  -e LAUNCH_LIBRARY_LIMIT=100 \
+  -e LAUNCH_LIBRARY_MAX_PAGES=500 \
+  -e SPACEX_LAUNCHES_PAGE_SIZE=100 \
+  -e SPACEX_LAUNCHES_MAX_PAGES=500 \
+  -e WEATHER_MAX_REQUESTS=2000 \
+  ingestion
+```
+
+### Salida de la ingesta
+
+La ingesta guarda datos crudos versionados por ejecución en:
+
+```text
+data/raw/YYYYMMDD_HHMMSS/
+```
+
+Archivos generados:
+
+- `launch_library_launches.jsonl`
+- `launch_library_images.jsonl`
+- `spacex_rockets.json`
+- `spacex_launches_images.jsonl`
+- `open_meteo_samples.jsonl`
+- `manifest.json`
+
+### Procesamiento Silver y Gold (particionado)
+
+Una vez generada la capa raw, se ejecuta el job de Spark para normalizar datos y crear capas analíticas.
+
+1. Levantar cluster Spark:
+
+```bash
+docker compose up -d spark-master spark-worker
+```
+
+2. Ejecutar procesamiento Silver/Gold:
+
+```bash
+docker compose run --rm processing
+```
+
+3. (Opcional) Procesar una corrida raw concreta:
+
+```bash
+docker compose run --rm -e RAW_RUN_ID=20260420_192320 processing
+```
+
+Salidas particionadas:
+
+- `data/silver/launches` (partition: `launch_year`)
+- `data/silver/weather` (partition: `weather_year`)
+- `data/silver/spacex_rockets`
+- `data/silver/images` (partition: `source`, `launch_year`)
+- `data/gold/company_year_metrics` (partition: `launch_year`)
+- `data/gold/launch_features` (partition: `launch_year`)
 
 ---
 

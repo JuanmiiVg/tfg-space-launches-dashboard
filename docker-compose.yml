@@ -1,0 +1,95 @@
+services:
+  ingestion:
+    build:
+      context: ./ingestion
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      OUTPUT_DIR: /app/data/raw
+    volumes:
+      - ./data:/app/data
+    networks:
+      - data-platform
+    restart: "no"
+
+  processing:
+    image: apache/spark:3.5.1
+    depends_on:
+      - spark-master
+      - spark-worker
+    environment:
+      RAW_BASE_DIR: /opt/spark/workspace/data/raw
+      SILVER_BASE_DIR: /opt/spark/workspace/data/silver
+      GOLD_BASE_DIR: /opt/spark/workspace/data/gold
+    command:
+      - /opt/spark/bin/spark-submit
+      - --master
+      - spark://spark-master:7077
+      - /opt/spark/workspace/processing/src/silver_gold.py
+    volumes:
+      - ./:/opt/spark/workspace
+    networks:
+      - data-platform
+    restart: "no"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: space-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-space_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-space_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-space_launches}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - data-platform
+
+  spark-master:
+    image: apache/spark:3.5.1
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.master.Master
+      - --host
+      - spark-master
+      - --port
+      - "7077"
+      - --webui-port
+      - "8080"
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./data:/opt/spark/workspace/data
+    networks:
+      - data-platform
+
+  spark-worker:
+    image: apache/spark:3.5.1
+    command:
+      - /opt/spark/bin/spark-class
+      - org.apache.spark.deploy.worker.Worker
+      - spark://spark-master:7077
+      - --cores
+      - "2"
+      - --memory
+      - 2G
+      - --webui-port
+      - "8081"
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/opt/spark/workspace/data
+    networks:
+      - data-platform
+
+networks:
+  data-platform:
+    driver: bridge
+
+volumes:
+  postgres_data:
