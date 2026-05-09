@@ -1,291 +1,155 @@
-# 🚀 Proyecto Integrador
+# Proyecto Integrador
 
-## Análisis y Predicción de Lanzamientos Espaciales con Big Data, BI y Machine Learning
+## Análisis y Predicción de Lanzamientos Espaciales con Big Data y BI
 
 ![License](https://img.shields.io/badge/Licencia-MIT-green.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
-![Spark](https://img.shields.io/badge/Apache%20Spark-Distributed-orange.svg)
-![Power%20BI](https://img.shields.io/badge/BI-Power%20BI-yellow.svg)
+![Spark](https://img.shields.io/badge/Apache%20Spark-3.5-orange.svg)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-red.svg)
+![Docker](https://img.shields.io/badge/Infra-Docker-blue.svg)
 
 ---
 
-## 📌 1. Descripción del proyecto
+## 1. Descripción del proyecto
 
-Este proyecto desarrolla un pipeline completo de datos que analiza lanzamientos espaciales históricos y permite:
+Pipeline completo de datos que analiza lanzamientos espaciales históricos:
 
-- Comprender los factores que influyen en su éxito.
-- Visualizar patrones mediante dashboards interactivos.
-- Predecir la probabilidad de éxito de futuros lanzamientos.
-- Simular escenarios personalizados en tiempo real.
-
-Se integran múltiples fuentes de datos mediante APIs, procesamiento distribuido con Spark, visualización en BI y un sistema interactivo para el usuario final.
+- Extrae datos reales desde APIs públicas.
+- Los procesa con Spark en capas Silver/Gold.
+- Los visualiza en un dashboard interactivo con 8 paneles temáticos.
+- Permite simular la probabilidad de éxito de un lanzamiento.
 
 ---
 
-## 🎯 2. Objetivo
+## 2. Fuentes de datos (APIs)
 
-Construir un sistema que cubra todo el ciclo de datos:
+### Launch Library 2
+Lanzamientos: fecha, estado, empresa, cohete, sitio.
 
-- Ingesta desde APIs reales.
-- Procesamiento distribuido con Spark.
-- Análisis visual con BI.
-- Modelado predictivo con Machine Learning.
-- Interacción con el usuario mediante una app web.
+- URL: `https://ll.thespacedevs.com/2.2.0/launch/`
 
----
+### Open-Meteo
+Clima histórico por coordenadas: temperatura, viento.
 
-## ❓ 3. Problema de negocio
+- URL: `https://open-meteo.com/`
 
-Los lanzamientos espaciales implican altos costes y riesgo operativo.
+### SpaceX API
+Cohetes, lanzamientos e imágenes.
 
-Este proyecto busca responder:
-
-- ¿Qué factores influyen en el éxito de un lanzamiento?
-- ¿Cómo afecta el clima?
-- ¿Qué empresas o cohetes tienen mejor rendimiento?
-- ¿Se puede predecir el éxito antes del lanzamiento?
+- URL: `https://api.spacexdata.com/`
 
 ---
 
-## 📡 4. Fuentes de datos (APIs)
-
-### 🛰️ Launch Library 2
-Datos de lanzamientos: fecha, estado, empresa, ubicación.
-
-- URL: https://ll.thespacedevs.com/2.2.0/launch/
-
-### 🌦️ Open-Meteo
-Clima histórico: temperatura, viento, etc.
-
-- URL: https://open-meteo.com/
-- Sin API key.
-
-### 🚀 SpaceX API
-Información de cohetes, lanzamientos e imágenes.
-
-- URL: https://api.spacexdata.com/
-
----
-
-## 🏗️ 5. Arquitectura del sistema
-
-**APIs → Ingesta → Limpieza → Integración → Spark → ML + BI → Simulador**
-
----
-
-## 🔄 6. Fases del pipeline
-
-### 6.1 Ingesta
-
-- Extracción desde APIs REST.
-- Conversión a formato estructurado.
-
-### 6.2 Limpieza
-
-- Eliminación de valores nulos.
-- Normalización de fechas.
-- Estandarización de nombres.
-
-### 6.3 Integración
-
-- Unión de datasets por fecha y ubicación.
-- Enriquecimiento de datos.
-
-### 6.4 Procesamiento con Spark
-
-Operaciones clave:
-
-- Agregaciones.
-  - Lanzamientos por año.
-  - Tasa de éxito por empresa.
-- Cruce de datasets mediante joins.
-- Creación de variables para Machine Learning.
-
-**Justificación:** Spark permite procesar grandes volúmenes de datos de forma distribuida y eficiente.
-
-### 6.5 Almacenamiento
-
-- PostgreSQL.
-- Ficheros Parquet.
-
----
-
-## 📊 7. Business Intelligence (Dashboard interactivo)
-
-Esta es una de las partes clave del proyecto.
-
-Se desarrollará un dashboard en Power BI con alta interactividad.
-
-### 🌍 Mapa de lanzamientos
-
-- Visualización geográfica de lanzamientos.
-- Puntos por ubicación.
-- Colores:
-  - 🟢 éxito
-  - 🔴 fallo
-
-Esto permitirá detectar zonas con mayor tasa de éxito.
-
-### 📈 Visualizaciones principales
-
-- Lanzamientos por año.
-- Evolución temporal.
-- Identificación de tendencias.
-- Éxito por empresa.
-- Comparativa entre SpaceX, NASA, etc.
-- Ranking de rendimiento.
-- Clima vs éxito.
-- Relación entre condiciones meteorológicas y resultado.
-
-### 🎛️ Interactividad
-
-El dashboard incluirá filtros dinámicos para:
-
-- Empresa.
-- Tipo de cohete.
-- Año.
-- Resultado (éxito/fallo).
-
-Esto permitirá análisis personalizados en tiempo real.
-
-### 📌 KPI principal
-
-- Tasa de éxito global (%).
-
-### 🎯 Objetivo del BI
-
-Responder visualmente:
-
-- ¿Qué empresa tiene mejores resultados?
-- ¿Cómo ha evolucionado el sector?
-- ¿El clima influye realmente?
-
----
-
-## 🤖 8. Machine Learning
-
-### Tipo
-
-- Clasificación.
-
-### Objetivo
-
-- Predecir éxito (1) o fallo (0).
-
-### Variables
-
-- Temperatura.
-- Viento.
-- Tipo de cohete.
-- Empresa.
-- Historial.
-
-### Modelos
-
-- Logistic Regression.
-- Random Forest.
-
-### Métricas
-
-- Accuracy.
-- Precision.
-- Recall.
-
----
-
-## 🎮 9. Simulador interactivo
-
-Se desarrollará una aplicación con Streamlit que permitirá:
-
-### 🎛️ Inputs del usuario
-
-- Selección de cohete 🚀
-- Temperatura 🌡️
-- Velocidad del viento 💨
-
-### 🖼️ Elementos visuales
-
-- Imagen del cohete seleccionado.
-- Interfaz intuitiva.
-
-### 📊 Output
-
-- Probabilidad de éxito (%).
-- Mensaje interpretativo.
-
-### 💡 Ejemplo
-
-- Cohete: Falcon 9 🚀
-- Temperatura: 22°C
-- Viento: 10 km/h
-
-**Resultado:**
-
-- Probabilidad de éxito: 87%
-- Mensaje: "Condiciones óptimas para el lanzamiento"
-
----
-
-## 🔗 10. DAG del pipeline
-
-```text
-Ingesta → Limpieza → Integración → Spark
-                                      ↓
-                              ┌───────┴───────┐
-                              │               │
-                             ML              BI
-                              │
-                       Simulador UI
+## 3. Arquitectura del sistema
+
+```
+APIs (Launch Library, SpaceX, Open-Meteo)
+        ↓
+   Ingesta (Docker)
+        ↓
+  data/raw/  (JSONL versionado)
+        ↓
+  Spark Silver/Gold (Parquet particionado)
+        ↓
+  Dashboard Streamlit (8 tabs)
 ```
 
 ---
 
-## ⚙️ 11. Stack tecnológico
+## 4. Pipeline de datos
 
-- Python
-- PySpark
-- Pandas
-- Scikit-learn
-- Power BI
-- Streamlit
-- APIs REST
-- (Opcional) Airflow
+### 4.1 Ingesta
+
+- Extracción desde APIs REST con retry y throttling.
+- Cursor persistente para ingesta incremental de Launch Library.
+- Datos guardados en `data/raw/YYYYMMDD_HHMMSS/`.
+
+Archivos generados por corrida:
+
+```
+data/raw/YYYYMMDD_HHMMSS/
+├── launch_library_launches.jsonl
+├── launch_library_images.jsonl
+├── spacex_rockets.json
+├── spacex_launches_images.jsonl
+├── open_meteo_samples.jsonl
+└── manifest.json
+```
+
+### 4.2 Procesamiento Spark (Silver / Gold)
+
+El job `processing/src/silver_gold.py` transforma los datos crudos en capas analíticas:
+
+**Silver** (datos normalizados):
+
+- `data/silver/launches` (partición: `launch_year`)
+- `data/silver/weather` (partición: `weather_year`)
+- `data/silver/spacex_rockets`
+- `data/silver/images` (partición: `source`, `launch_year`)
+
+**Gold** (agregaciones):
+
+- `data/gold/company_year_metrics` (partición: `launch_year`)
+- `data/gold/launch_features` (partición: `launch_year`)
 
 ---
 
-## 🐳 11.1 Ejecución con Docker (Ingesta + Plataforma de datos)
+## 5. Dashboard interactivo (Streamlit)
 
-Para empezar con una base escalable y orientada a Big Data, el proyecto se puede levantar con Docker Compose.
+Interfaz visual con tema espacial oscuro, fondo estrellado animado y efectos de brillo. 8 paneles:
 
-### Servicios incluidos
+| # | Panel | Contenido |
+|---|-------|-----------|
+| 1 | Resumen Global | KPIs: total lanzamientos, tasa de éxito, empresas activas, años cubiertos |
+| 2 | Histórico | Evolución anual, mapa de calor estacional (mes × año) |
+| 3 | Proveedores | Ranking de empresas, carrera animada de barras por año |
+| 4 | Cohetes | Métricas por cohete, comparativa éxito/fallo |
+| 5 | Clima | Dispersión temperatura/viento vs resultado, distribuciones |
+| 6 | Mapa Global | Globo 3D ortográfico con sitios de lanzamiento (tamaño = volumen, color = tasa de éxito) |
+| 7 | Galería | Imágenes de lanzamientos con filtros por fuente, año y búsqueda, paginación |
+| 8 | Simulador | Selección de cohete, temperatura y viento → probabilidad de éxito con gauge animado |
 
-- `ingestion`: extracción desde Launch Library, SpaceX y Open-Meteo.
-- `postgres`: base de datos para capas procesadas y analítica.
-- `spark-master`: nodo maestro de Spark.
-- `spark-worker`: nodo worker para procesamiento distribuido.
-
-### Pasos rápidos
-
-1. Copiar variables de entorno:
+### Ejecución local
 
 ```bash
+cd dashboard
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Requiere que los datos Parquet estén en `data/silver/` y `data/gold/`.
+
+---
+
+## 6. Ejecución con Docker
+
+### Servicios
+
+| Servicio | Descripción |
+|----------|-------------|
+| `ingestion` | Extracción desde las 3 APIs |
+| `processing` | Job Spark Silver/Gold |
+| `spark-master` | Nodo maestro Spark |
+| `spark-worker` | Nodo worker Spark (escalable) |
+| `postgres` | Base de datos analítica |
+
+### Inicio rápido
+
+```bash
+# 1. Configurar variables de entorno
 cp .env.example .env
-```
 
-2. Ejecutar ingesta inicial:
-
-```bash
+# 2. Ejecutar ingesta inicial
 docker compose run --rm ingestion
-```
 
-3. Levantar plataforma de datos (Spark + PostgreSQL):
-
-```bash
+# 3. Levantar plataforma Spark + PostgreSQL
 docker compose up -d postgres spark-master spark-worker
+
+# 4. Ejecutar procesamiento Silver/Gold
+docker compose run --rm processing
 ```
 
-4. Escalar workers Spark:
+### Escalar workers Spark
 
 ```bash
 docker compose up -d --scale spark-worker=3 spark-worker
@@ -293,146 +157,102 @@ docker compose up -d --scale spark-worker=3 spark-worker
 
 ### Modo Big Data (alta extracción)
 
-La ingesta se controla por variables de entorno para aumentar volumen sin tocar código:
+Variables de entorno para controlar el volumen:
 
-- `LAUNCH_LIBRARY_LIMIT` (registros por página)
-- `LAUNCH_LIBRARY_MAX_PAGES` (páginas Launch Library)
-- `SPACEX_LAUNCHES_PAGE_SIZE` (registros por página SpaceX)
-- `SPACEX_LAUNCHES_MAX_PAGES` (páginas SpaceX)
-- `WEATHER_MAX_REQUESTS` (límite de llamadas de clima)
-
-Ejemplo de ejecución masiva:
+| Variable | Descripción |
+|----------|-------------|
+| `LAUNCH_LIBRARY_LIMIT` | Registros por página |
+| `LAUNCH_LIBRARY_MAX_PAGES` | Páginas máximas por corrida |
+| `SPACEX_LAUNCHES_PAGE_SIZE` | Registros por página SpaceX |
+| `SPACEX_LAUNCHES_MAX_PAGES` | Páginas máximas SpaceX |
+| `WEATHER_MAX_REQUESTS` | Límite de llamadas clima |
 
 ```bash
 docker compose run --rm \
   -e LAUNCH_LIBRARY_LIMIT=100 \
   -e LAUNCH_LIBRARY_MAX_PAGES=500 \
-  -e SPACEX_LAUNCHES_PAGE_SIZE=100 \
-  -e SPACEX_LAUNCHES_MAX_PAGES=500 \
   -e WEATHER_MAX_REQUESTS=2000 \
   ingestion
 ```
 
-### Salida de la ingesta
+---
 
-La ingesta guarda datos crudos versionados por ejecución en:
+## 7. Ingesta incremental (recomendado)
 
-```text
-data/raw/YYYYMMDD_HHMMSS/
+Cuando Launch Library responde 429, conviene extraer en lotes pequeños con cursor persistente.
+
+### Variables relevantes
+
+| Variable | Descripción |
+|----------|-------------|
+| `LAUNCH_LIBRARY_BATCH_MODE=1` | Activa cursor persistente |
+| `LAUNCH_LIBRARY_MAX_PAGES=5` | Limita páginas por corrida |
+| `LAUNCH_LIBRARY_CURSOR_FILE` | Ruta del archivo cursor |
+| `LAUNCH_LIBRARY_RESET_CURSOR=1` | Reinicia cursor desde el inicio |
+| `LAUNCH_LIBRARY_SYNTHETIC_MODE=1` | Completa volumen con datos sintéticos coherentes |
+| `LAUNCH_LIBRARY_SYNTHETIC_TARGET=1000` | Mínimo de filas por corrida |
+
+### Ejecución en lotes (PowerShell)
+
+```powershell
+# 12 corridas con pausa de 2 minutos entre cada una
+.\ingestion\run_incremental_ingestion.ps1 -Runs 12 -PauseSeconds 120
+
+# Con rebuild de imagen y reinicio de cursor
+.\ingestion\run_incremental_ingestion.ps1 -Runs 12 -PauseSeconds 120 -Rebuild -ResetCursor
 ```
 
-Archivos generados:
-
-- `launch_library_launches.jsonl`
-- `launch_library_images.jsonl`
-- `spacex_rockets.json`
-- `spacex_launches_images.jsonl`
-- `open_meteo_samples.jsonl`
-- `manifest.json`
-
-### Procesamiento Silver y Gold (particionado)
-
-Una vez generada la capa raw, se ejecuta el job de Spark para normalizar datos y crear capas analíticas.
-
-1. Levantar cluster Spark:
-
-```bash
-docker compose up -d spark-master spark-worker
-```
-
-2. Ejecutar procesamiento Silver/Gold:
-
-```bash
-docker compose run --rm processing
-```
-
-3. (Opcional) Procesar una corrida raw concreta:
-
-```bash
-docker compose run --rm -e RAW_RUN_ID=20260420_192320 processing
-```
-
-Salidas particionadas:
-
-- `data/silver/launches` (partition: `launch_year`)
-- `data/silver/weather` (partition: `weather_year`)
-- `data/silver/spacex_rockets`
-- `data/silver/images` (partition: `source`, `launch_year`)
-- `data/gold/company_year_metrics` (partition: `launch_year`)
-- `data/gold/launch_features` (partition: `launch_year`)
+Ver [INGESTION-GUIDE.md](INGESTION-GUIDE.md) para más detalles.
 
 ---
 
-## 📦 12. Estructura del proyecto
+## 8. Estructura del proyecto
 
-```text
-project/
-│
+```
+proyecto/
 ├── data/
-├── src/
-│   ├── ingestion/
-│   ├── processing/
-│   ├── ml/
-│   └── utils/
+│   ├── raw/                    # Salida de ingesta (versionada por fecha)
+│   ├── silver/                 # Parquet normalizado
+│   └── gold/                   # Parquet agregado
+│
+├── ingestion/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── src/main.py             # Extracción desde 3 APIs
+│
+├── processing/
+│   └── src/silver_gold.py      # Job Spark Silver/Gold
 │
 ├── dashboard/
-├── app/
-├── docs/
-├── README.md
-└── requirements.txt
+│   ├── app.py                  # Dashboard Streamlit (8 tabs)
+│   └── requirements.txt
+│
+├── scripts/                    # Utilidades auxiliares
+├── docker-compose.yml
+├── .env.example
+└── README.md
 ```
 
 ---
 
-## 📈 13. Escalabilidad
+## 9. Stack tecnológico
 
-- Uso de Spark en cluster.
-- Data Lake.
-- Automatización con Airflow.
-
----
-
-## 🎤 14. Defensa
-
-- Presentación visual.
-- Dashboard en vivo.
-- Simulación en directo.
-- Explicación del pipeline.
+| Capa | Tecnología |
+|------|-----------|
+| Ingesta | Python, requests, Docker |
+| Procesamiento | Apache Spark 3.5, PySpark |
+| Almacenamiento | Parquet (Silver/Gold), PostgreSQL |
+| Visualización | Streamlit, Plotly |
+| Infraestructura | Docker Compose |
 
 ---
 
-## 📜 15. Licencia
+## 10. Licencia
 
-Este proyecto está bajo la licencia **MIT**.
-
-Consulta el archivo [LICENSE](LICENSE) para más detalles.
+MIT © 2026 Juan Manuel
 
 ---
 
-## 👨‍💻 16. Autor
+## 11. Autor
 
 **Juan Manuel**
-
----
-
-## 🚀 Conclusión
-
-Este proyecto integra:
-
-- Ingeniería de datos.
-- Procesamiento distribuido.
-- Visualización interactiva.
-- Machine Learning.
-- Experiencia de usuario.
-
----
-
-## 📄 Licencia MIT
-
-Copyright (c) 2026 Juan Manuel
-
-Se concede permiso, libre de cargos, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados (el "Software"), a utilizar el Software sin restricción, incluyendo sin limitación los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, y a permitir a las personas a quienes se les proporcione el Software a hacerlo, sujeto a las siguientes condiciones:
-
-El aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.
-
-EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A LAS GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑOS U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO TIPO, DERIVADA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
