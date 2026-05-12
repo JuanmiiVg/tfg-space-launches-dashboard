@@ -14,57 +14,80 @@
 
 Pipeline completo de datos que analiza lanzamientos espaciales históricos:
 
-- Extrae datos reales desde APIs públicas.
-- Los procesa con Spark en capas Silver/Gold.
+- Extrae datos reales desde 3 APIs públicas.
+- Los procesa con Spark en capas Silver/Gold (arquitectura medallion).
 - Los visualiza en un dashboard interactivo con 8 paneles temáticos.
 - Permite simular la probabilidad de éxito de un lanzamiento.
 
 ---
 
-## 2. Fuentes de datos (APIs)
+## 2. Inicio rápido — un solo comando
+
+Con **Docker** instalado, desde la raíz del proyecto:
+
+```bash
+docker compose up
+```
+
+Esto hace todo en orden automático:
+
+| Paso | Servicio | Acción |
+|------|----------|--------|
+| 1 | `ingestion` | Extrae datos de las 3 APIs y guarda JSONL en `data/raw/` |
+| 2 | `processing` | Transforma los datos a Parquet Silver/Gold con Spark |
+| 3 | `dashboard` | Arranca el dashboard en [http://localhost:8501](http://localhost:8501) |
+
+Los servicios 2 y 3 esperan automáticamente a que el anterior termine con éxito
+(`depends_on: condition: service_completed_successfully`).
+
+**Primera ejecución:** ~10 minutos (ingesta de APIs incluida).  
+**Siguientes ejecuciones:** segundos (los datos ya están en `data/`).
+
+Para parar todo:
+
+```bash
+docker compose down
+```
+
+---
+
+## 3. Fuentes de datos (APIs)
 
 ### Launch Library 2
 Lanzamientos: fecha, estado, empresa, cohete, sitio.
-
 - URL: `https://ll.thespacedevs.com/2.2.0/launch/`
 
 ### Open-Meteo
 Clima histórico por coordenadas: temperatura, viento.
-
 - URL: `https://open-meteo.com/`
 
 ### SpaceX API
 Cohetes, lanzamientos e imágenes.
-
 - URL: `https://api.spacexdata.com/`
 
 ---
 
-## 3. Arquitectura del sistema
+## 4. Arquitectura del sistema
 
 ```
 APIs (Launch Library, SpaceX, Open-Meteo)
         ↓
-   Ingesta (Docker)
+   Ingesta Python 3.10  →  data/raw/  (JSONL versionado)
         ↓
-  data/raw/  (JSONL versionado)
+   Spark 3.5.1 local[2]  →  data/silver/  data/gold/  (Parquet)
         ↓
-  Spark Silver/Gold (Parquet particionado)
-        ↓
-  Dashboard Streamlit (8 tabs)
+   Dashboard Streamlit  →  localhost:8501
 ```
 
 ---
 
-## 4. Pipeline de datos
+## 5. Pipeline de datos
 
-### 4.1 Ingesta
+### 5.1 Ingesta
 
 - Extracción desde APIs REST con retry y throttling.
 - Cursor persistente para ingesta incremental de Launch Library.
 - Datos guardados en `data/raw/YYYYMMDD_HHMMSS/`.
-
-Archivos generados por corrida:
 
 ```
 data/raw/YYYYMMDD_HHMMSS/
@@ -76,9 +99,9 @@ data/raw/YYYYMMDD_HHMMSS/
 └── manifest.json
 ```
 
-### 4.2 Procesamiento Spark (Silver / Gold)
+### 5.2 Procesamiento Spark (Silver / Gold)
 
-El job `processing/src/silver_gold.py` transforma los datos crudos en capas analíticas:
+El job `processing/src/silver_gold.py` corre en modo `local[2]` (sin clúster externo).
 
 **Silver** (datos normalizados):
 
@@ -94,9 +117,9 @@ El job `processing/src/silver_gold.py` transforma los datos crudos en capas anal
 
 ---
 
-## 5. Dashboard interactivo (Streamlit)
+## 6. Dashboard interactivo (Streamlit)
 
-Interfaz visual con tema espacial oscuro, fondo estrellado animado y efectos de brillo. 8 paneles:
+Interfaz con tema espacial oscuro, fondo estrellado animado y efectos de brillo. 8 paneles:
 
 | # | Panel | Contenido |
 |---|-------|-----------|
@@ -105,100 +128,57 @@ Interfaz visual con tema espacial oscuro, fondo estrellado animado y efectos de 
 | 3 | Proveedores | Ranking de empresas, carrera animada de barras por año |
 | 4 | Cohetes | Métricas por cohete, comparativa éxito/fallo |
 | 5 | Clima | Dispersión temperatura/viento vs resultado, distribuciones |
-| 6 | Mapa Global | Globo 3D ortográfico con sitios de lanzamiento (tamaño = volumen, color = tasa de éxito) |
-| 7 | Galería | Imágenes de lanzamientos con filtros por fuente, año y búsqueda, paginación |
-| 8 | Simulador | Selección de cohete, temperatura y viento → probabilidad de éxito con gauge animado |
-
-### Ejecución local
-
-```bash
-cd dashboard
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-Requiere que los datos Parquet estén en `data/silver/` y `data/gold/`.
+| 6 | Mapa Global | Globo 3D ortográfico con sitios de lanzamiento |
+| 7 | Galería | Imágenes de lanzamientos con filtros y paginación |
+| 8 | Simulador | Cohete + temperatura + viento → probabilidad de éxito con gauge animado |
 
 ---
 
-## 6. Ejecución con Docker
+## 7. Variables de entorno (opcionales)
 
-### Servicios
-
-| Servicio | Descripción |
-|----------|-------------|
-| `ingestion` | Extracción desde las 3 APIs |
-| `processing` | Job Spark Silver/Gold |
-| `spark-master` | Nodo maestro Spark |
-| `spark-worker` | Nodo worker Spark (escalable) |
-| `postgres` | Base de datos analítica |
-
-### Inicio rápido
+El sistema funciona sin `.env` gracias a los valores por defecto embebidos en
+`docker-compose.yml`. Si quieres ajustar el volumen de datos, crea un `.env`
+en la raíz:
 
 ```bash
-# 1. Configurar variables de entorno
-cp .env.example .env
-
-# 2. Ejecutar ingesta inicial
-docker compose run --rm ingestion
-
-# 3. Levantar plataforma Spark + PostgreSQL
-docker compose up -d postgres spark-master spark-worker
-
-# 4. Ejecutar procesamiento Silver/Gold
-docker compose run --rm processing
+cp .env.example .env   # luego edita a tu gusto
 ```
 
-### Escalar workers Spark
+Variables más relevantes:
+
+| Variable | Default | Descripción |
+|----------|---------|-------------|
+| `LAUNCH_LIBRARY_MAX_PAGES` | `5` | Páginas máximas por corrida |
+| `LAUNCH_LIBRARY_SYNTHETIC_MODE` | `1` | Completa con datos sintéticos coherentes |
+| `LAUNCH_LIBRARY_SYNTHETIC_TARGET` | `1000` | Mínimo de filas objetivo |
+| `WEATHER_MAX_REQUESTS` | `500` | Límite de llamadas a Open-Meteo |
+| `LAUNCH_LIBRARY_RESET_CURSOR` | `0` | Ponlo a `1` para reiniciar desde el principio |
+
+---
+
+## 8. Servicios opcionales
+
+Los siguientes servicios no arrancan por defecto. Se activan con perfiles:
 
 ```bash
-docker compose up -d --scale spark-worker=3 spark-worker
-```
+# Spark UI en localhost:8080 (clúster master + worker visual)
+docker compose --profile spark-ui up
 
-### Modo Big Data (alta extracción)
-
-Variables de entorno para controlar el volumen:
-
-| Variable | Descripción |
-|----------|-------------|
-| `LAUNCH_LIBRARY_LIMIT` | Registros por página |
-| `LAUNCH_LIBRARY_MAX_PAGES` | Páginas máximas por corrida |
-| `SPACEX_LAUNCHES_PAGE_SIZE` | Registros por página SpaceX |
-| `SPACEX_LAUNCHES_MAX_PAGES` | Páginas máximas SpaceX |
-| `WEATHER_MAX_REQUESTS` | Límite de llamadas clima |
-
-```bash
-docker compose run --rm \
-  -e LAUNCH_LIBRARY_LIMIT=100 \
-  -e LAUNCH_LIBRARY_MAX_PAGES=500 \
-  -e WEATHER_MAX_REQUESTS=2000 \
-  ingestion
+# PostgreSQL en localhost:5432
+docker compose --profile postgres up
 ```
 
 ---
 
-## 7. Ingesta incremental (recomendado)
+## 9. Ingesta incremental
 
-Cuando Launch Library responde 429, conviene extraer en lotes pequeños con cursor persistente.
-
-### Variables relevantes
-
-| Variable | Descripción |
-|----------|-------------|
-| `LAUNCH_LIBRARY_BATCH_MODE=1` | Activa cursor persistente |
-| `LAUNCH_LIBRARY_MAX_PAGES=5` | Limita páginas por corrida |
-| `LAUNCH_LIBRARY_CURSOR_FILE` | Ruta del archivo cursor |
-| `LAUNCH_LIBRARY_RESET_CURSOR=1` | Reinicia cursor desde el inicio |
-| `LAUNCH_LIBRARY_SYNTHETIC_MODE=1` | Completa volumen con datos sintéticos coherentes |
-| `LAUNCH_LIBRARY_SYNTHETIC_TARGET=1000` | Mínimo de filas por corrida |
-
-### Ejecución en lotes (PowerShell)
+Cuando Launch Library responde 429, conviene extraer en lotes con cursor persistente.
 
 ```powershell
 # 12 corridas con pausa de 2 minutos entre cada una
 .\ingestion\run_incremental_ingestion.ps1 -Runs 12 -PauseSeconds 120
 
-# Con rebuild de imagen y reinicio de cursor
+# Con rebuild y reinicio de cursor
 .\ingestion\run_incremental_ingestion.ps1 -Runs 12 -PauseSeconds 120 -Rebuild -ResetCursor
 ```
 
@@ -206,7 +186,7 @@ Ver [INGESTION-GUIDE.md](INGESTION-GUIDE.md) para más detalles.
 
 ---
 
-## 8. Estructura del proyecto
+## 10. Estructura del proyecto
 
 ```
 proyecto/
@@ -224,35 +204,36 @@ proyecto/
 │   └── src/silver_gold.py      # Job Spark Silver/Gold
 │
 ├── dashboard/
+│   ├── Dockerfile              # Imagen del dashboard (python:3.11-slim)
 │   ├── app.py                  # Dashboard Streamlit (8 tabs)
 │   └── requirements.txt
 │
-├── scripts/                    # Utilidades auxiliares
-├── docker-compose.yml
+├── docker-compose.yml          # Orquesta todo con un comando
 ├── .env.example
 └── README.md
 ```
 
 ---
 
-## 9. Stack tecnológico
+## 11. Stack tecnológico
 
-| Capa | Tecnología |
-|------|-----------|
-| Ingesta | Python, requests, Docker |
-| Procesamiento | Apache Spark 3.5, PySpark |
-| Almacenamiento | Parquet (Silver/Gold), PostgreSQL |
-| Visualización | Streamlit, Plotly |
-| Infraestructura | Docker Compose |
+| Capa | Tecnología | Versión |
+|------|------------|---------|
+| Ingesta | Python + requests | 3.10 / 2.32 |
+| Procesamiento | Apache Spark + PySpark | 3.5.1 |
+| Almacenamiento | Parquet (Silver/Gold) | — |
+| Visualización | Streamlit + Plotly Go | 1.57 / 6.7 |
+| Infraestructura | Docker Compose | 28.5 / v2.40 |
+| Base de datos | PostgreSQL (opcional) | 16-alpine |
 
 ---
 
-## 10. Licencia
+## 12. Licencia
 
 MIT © 2026 Juan Manuel
 
 ---
 
-## 11. Autor
+## 13. Autor
 
-**Juan Manuel**
+**Juan Manuel Vega Carrillo**

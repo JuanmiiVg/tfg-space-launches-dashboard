@@ -19,3 +19,10 @@ Thumbs.db
 
 # Docker
 *.log
+
+# Claude Code AI memory (local only)
+.claude/
+
+# Generated documents (local only)
+overleaf_tfg/
+output_docs/

@@ -1,54 +1,89 @@
 services:
+
+  # ── 1. INGESTA ─────────────────────────────────────────────────────────────
+  # Extrae datos de Launch Library 2, SpaceX API y Open-Meteo.
+  # Se ejecuta una vez y termina.
   ingestion:
     build:
       context: ./ingestion
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       OUTPUT_DIR: /app/data/raw
+      LAUNCH_LIBRARY_BASE_URL:      ${LAUNCH_LIBRARY_BASE_URL:-https://ll.thespacedevs.com/2.2.0/launch/}
+      SPACEX_ROCKETS_URL:           ${SPACEX_ROCKETS_URL:-https://api.spacexdata.com/v4/rockets}
+      SPACEX_LAUNCHES_QUERY_URL:    ${SPACEX_LAUNCHES_QUERY_URL:-https://api.spacexdata.com/v5/launches/query}
+      SPACEX_LAUNCHPADS_URL:        ${SPACEX_LAUNCHPADS_URL:-https://api.spacexdata.com/v4/launchpads}
+      SPACEX_PAYLOADS_URL:          ${SPACEX_PAYLOADS_URL:-https://api.spacexdata.com/v4/payloads}
+      SPACEX_CORES_URL:             ${SPACEX_CORES_URL:-https://api.spacexdata.com/v4/cores}
+      SPACEX_SHIPS_URL:             ${SPACEX_SHIPS_URL:-https://api.spacexdata.com/v4/ships}
+      OPEN_METEO_ARCHIVE_URL:       ${OPEN_METEO_ARCHIVE_URL:-https://archive-api.open-meteo.com/v1/archive}
+      LAUNCH_LIBRARY_LIMIT:         ${LAUNCH_LIBRARY_LIMIT:-100}
+      LAUNCH_LIBRARY_MAX_PAGES:     ${LAUNCH_LIBRARY_MAX_PAGES:-5}
+      LAUNCH_LIBRARY_BATCH_MODE:    ${LAUNCH_LIBRARY_BATCH_MODE:-1}
+      LAUNCH_LIBRARY_RESET_CURSOR:  ${LAUNCH_LIBRARY_RESET_CURSOR:-0}
+      LAUNCH_LIBRARY_SYNTHETIC_MODE:   ${LAUNCH_LIBRARY_SYNTHETIC_MODE:-1}
+      LAUNCH_LIBRARY_SYNTHETIC_TARGET: ${LAUNCH_LIBRARY_SYNTHETIC_TARGET:-1000}
+      LAUNCH_LIBRARY_CURSOR_FILE:   /app/data/raw/.launch_library_cursor.json
+      SPACEX_LAUNCHES_PAGE_SIZE:    ${SPACEX_LAUNCHES_PAGE_SIZE:-100}
+      SPACEX_LAUNCHES_MAX_PAGES:    ${SPACEX_LAUNCHES_MAX_PAGES:-200}
+      WEATHER_MAX_REQUESTS:         ${WEATHER_MAX_REQUESTS:-500}
+      REQUEST_TIMEOUT_SECONDS:      ${REQUEST_TIMEOUT_SECONDS:-30}
     volumes:
       - ./data:/app/data
-    networks:
-      - data-platform
+    networks: [data-platform]
     restart: "no"
 
+  # ── 2. PROCESAMIENTO ───────────────────────────────────────────────────────
+  # Transforma los datos raw (JSONL) a capas Silver y Gold con Spark local.
+  # Se ejecuta una vez (tras la ingesta) y termina.
   processing:
     image: apache/spark:3.5.1
+    user: root
     depends_on:
-      - spark-master
-      - spark-worker
+      ingestion:
+        condition: service_completed_successfully
     environment:
-      RAW_BASE_DIR: /opt/spark/workspace/data/raw
+      RAW_BASE_DIR:    /opt/spark/workspace/data/raw
       SILVER_BASE_DIR: /opt/spark/workspace/data/silver
-      GOLD_BASE_DIR: /opt/spark/workspace/data/gold
+      GOLD_BASE_DIR:   /opt/spark/workspace/data/gold
+      PYSPARK_PYTHON:        python3
+      PYSPARK_DRIVER_PYTHON: python3
     command:
       - /opt/spark/bin/spark-submit
       - --master
-      - spark://spark-master:7077
+      - local[2]
       - /opt/spark/workspace/processing/src/silver_gold.py
     volumes:
       - ./:/opt/spark/workspace
-    networks:
-      - data-platform
+    networks: [data-platform]
     restart: "no"
 
-  postgres:
-    image: postgres:16-alpine
-    container_name: space-postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-space_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-space_pass}
-      POSTGRES_DB: ${POSTGRES_DB:-space_launches}
+  # ── 3. DASHBOARD ───────────────────────────────────────────────────────────
+  # Dashboard Streamlit con 8 paneles interactivos.
+  # Arranca tras el procesamiento y queda corriendo en localhost:8501.
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    depends_on:
+      processing:
+        condition: service_completed_successfully
     ports:
-      - "5432:5432"
+      - "8501:8501"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - data-platform
+      - ./data:/project/data
+    networks: [data-platform]
+    restart: unless-stopped
 
+  # ── SERVICIOS OPCIONALES (perfil: extras) ─────────────────────────────────
+
+  # Cluster Spark UI (opcional) — docker compose --profile spark-ui up
   spark-master:
     image: apache/spark:3.5.1
+    profiles: [spark-ui]
     command:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.master.Master
@@ -63,11 +98,12 @@ services:
       - "8080:8080"
     volumes:
       - ./data:/opt/spark/workspace/data
-    networks:
-      - data-platform
+    networks: [data-platform]
 
   spark-worker:
     image: apache/spark:3.5.1
+    profiles: [spark-ui]
+    depends_on: [spark-master]
     command:
       - /opt/spark/bin/spark-class
       - org.apache.spark.deploy.worker.Worker
@@ -78,14 +114,25 @@ services:
       - 2G
       - --webui-port
       - "8081"
-    depends_on:
-      - spark-master
     ports:
       - "8081:8081"
     volumes:
       - ./data:/opt/spark/workspace/data
-    networks:
-      - data-platform
+    networks: [data-platform]
+
+  # PostgreSQL (opcional) — docker compose --profile postgres up
+  postgres:
+    image: postgres:16-alpine
+    profiles: [postgres]
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-space_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-space_pass}
+      POSTGRES_DB:       ${POSTGRES_DB:-space_launches}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [data-platform]
 
 networks:
   data-platform:
