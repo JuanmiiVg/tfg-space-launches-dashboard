@@ -137,6 +137,8 @@ def _to_float(val: Any) -> float | None:
 @st.cache_data(show_spinner=False)
 def load_raw_jsonl() -> pd.DataFrame:
     raw_dir = ROOT / "data" / "raw"
+    if not raw_dir.exists():
+        return pd.DataFrame()
     runs = sorted([p for p in raw_dir.iterdir() if p.is_dir()])
     if not runs:
         return pd.DataFrame()
