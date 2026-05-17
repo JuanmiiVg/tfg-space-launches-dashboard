@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
+DEMO_DATA = Path(__file__).resolve().parent / "data"
 
 # ── Palette ────────────────────────────────────────────────────────────────────
 C = {
@@ -62,16 +63,24 @@ def layout(**kw: Any) -> dict:
 # ── Data loaders ───────────────────────────────────────────────────────────────
 
 @st.cache_data(show_spinner=False)
-def _parquet(folder: str) -> pd.DataFrame:
+def _parquet(folder: str, demo_name: str | None = None) -> pd.DataFrame:
+    # 1. Try flat demo file bundled with the dashboard (cloud-friendly)
+    if demo_name:
+        flat = DEMO_DATA / f"{demo_name}.parquet"
+        if flat.exists():
+            try:
+                return pd.read_parquet(flat)
+            except Exception:
+                pass
+    # 2. Try reading hive-partitioned directory
     path = Path(folder)
     if not path.exists():
         return pd.DataFrame()
-    # Reading the directory lets pyarrow include Hive partition columns (e.g. launch_year)
     try:
         return pd.read_parquet(path)
     except Exception:
         pass
-    # Fallback: iterate individual files
+    # 3. Fallback: iterate individual files
     dfs = []
     for f in path.glob("**/*.parquet"):
         try:
@@ -96,7 +105,7 @@ def _coerce_year(df: pd.DataFrame) -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_metrics() -> pd.DataFrame:
-    df = _parquet(str(ROOT / "data" / "gold" / "company_year_metrics"))
+    df = _parquet(str(ROOT / "data" / "gold" / "company_year_metrics"), "metrics")
     if df.empty:
         return df
     df = _coerce_year(df)
@@ -110,7 +119,7 @@ def load_metrics() -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_features() -> pd.DataFrame:
-    df = _parquet(str(ROOT / "data" / "gold" / "launch_features"))
+    df = _parquet(str(ROOT / "data" / "gold" / "launch_features"), "features")
     if df.empty:
         return df
     df = _coerce_year(df)
@@ -124,7 +133,7 @@ def load_features() -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_rockets() -> pd.DataFrame:
-    return _parquet(str(ROOT / "data" / "silver" / "spacex_rockets"))
+    return _parquet(str(ROOT / "data" / "silver" / "spacex_rockets"), "rockets")
 
 
 def _to_float(val: Any) -> float | None:
@@ -191,7 +200,18 @@ def load_raw_jsonl() -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_images() -> pd.DataFrame:
-    """Load launch images — tries silver parquet first, falls back to raw JSONL."""
+    """Load launch images — tries bundled demo file first, then silver parquet, then raw JSONL."""
+    flat = DEMO_DATA / "images.parquet"
+    if flat.exists():
+        try:
+            df = pd.read_parquet(flat)
+            if not df.empty and "image_url" in df.columns:
+                if "launch_year" in df.columns:
+                    df = _coerce_year(df)
+                return df
+        except Exception:
+            pass
+
     silver_path = ROOT / "data" / "silver" / "images"
     if silver_path.exists():
         try:
