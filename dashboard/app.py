@@ -621,7 +621,7 @@ def render_kpis(mf: pd.DataFrame, ff: pd.DataFrame) -> None:
 
 # ── Tab 1: Histórico ───────────────────────────────────────────────────────────
 
-def tab_historico(mf: pd.DataFrame) -> None:
+def tab_historico(mf: pd.DataFrame, ff: pd.DataFrame) -> None:
     st.markdown('<div class="sec-title">Actividad de Lanzamientos por Año</div>', unsafe_allow_html=True)
 
     yearly = (
@@ -725,14 +725,13 @@ def tab_historico(mf: pd.DataFrame) -> None:
 
     # ── Heatmap estacional ──
     st.markdown('<div class="sec-title">Estacionalidad — Lanzamientos por Mes y Año</div>', unsafe_allow_html=True)
-    raw_full = load_raw_jsonl()
-    if not raw_full.empty and "net" in raw_full.columns:
-        hdf = raw_full.copy()
-        hdf["_dt"] = pd.to_datetime(hdf["net"], errors="coerce", utc=True)
+    heatmap_src = ff if not ff.empty and "launch_date" in ff.columns else pd.DataFrame()
+    if not heatmap_src.empty:
+        hdf = heatmap_src.copy()
+        hdf["_dt"] = pd.to_datetime(hdf["launch_date"], errors="coerce", utc=False)
         hdf = hdf.dropna(subset=["_dt"])
         hdf["_month"] = hdf["_dt"].dt.month
         hdf["_year"] = hdf["_dt"].dt.year.astype(int)
-        # Apply same year range as the tab filter
         yr_min, yr_max = int(mf["launch_year"].min()), int(mf["launch_year"].max())
         hdf = hdf[(hdf["_year"] >= yr_min) & (hdf["_year"] <= yr_max)]
         pivot = hdf.groupby(["_year", "_month"]).size().reset_index(name="cnt")
@@ -1781,7 +1780,7 @@ def main() -> None:
         "🎮 Simulador",
     ])
     with t1:
-        tab_historico(mf)
+        tab_historico(mf, ff)
     with t2:
         tab_proveedores(mf)
     with t3:
