@@ -157,6 +157,64 @@ def build_silver_images(spark: SparkSession, raw_run_path: Path) -> DataFrame:
     return ll_images.unionByName(spacex_images)
 
 
+def build_silver_launch_costs(launches_silver: DataFrame) -> DataFrame:
+    """Generate synthetic launch costs from silver launches using known rocket cost references."""
+    rocket_costs = {
+        "Falcon 9":        (62_000_000, 2720,  "Standard"),
+        "Falcon Heavy":    (90_000_000, 1410,  "Heavy"),
+        "Starship":        (10_000_000, 100,   "Heavy"),
+        "Falcon 1":        (7_000_000,  4109,  "Budget"),
+        "Ariane 5":        (165_000_000,10500, "Premium"),
+        "Ariane 6":        (75_000_000, 4500,  "Standard"),
+        "Atlas V":         (130_000_000,8000,  "Premium"),
+        "Delta IV Heavy":  (350_000_000,13000, "Premium"),
+        "Vulcan Centaur":  (110_000_000,5600,  "Standard"),
+        "Soyuz-2":         (55_000_000, 7000,  "Standard"),
+        "Proton-M":        (65_000_000, 4600,  "Standard"),
+        "PSLV":            (15_000_000, 1500,  "Budget"),
+        "GSLV":            (45_000_000, 2500,  "Standard"),
+        "GSLV Mk III":     (48_000_000, 2600,  "Standard"),
+        "H-IIA":           (90_000_000, 8400,  "Premium"),
+        "H3":              (50_000_000, 5500,  "Standard"),
+        "Long March 2D":   (30_000_000, 2000,  "Budget"),
+        "Long March 3B":   (55_000_000, 5000,  "Standard"),
+        "Long March 5":    (70_000_000, 2500,  "Standard"),
+        "Electron":        (7_500_000,  35714, "Budget"),
+        "Antares":         (85_000_000, 8000,  "Standard"),
+        "Pegasus":         (40_000_000, 75000, "Budget"),
+        "New Glenn":       (60_000_000, 2500,  "Standard"),
+        "Vega":            (37_000_000, 3600,  "Budget"),
+        "Vega-C":          (42_000_000, 3000,  "Budget"),
+    }
+
+    cost_map_rows = [
+        (name, base, cpkg, cat)
+        for name, (base, cpkg, cat) in rocket_costs.items()
+    ]
+    spark = launches_silver.sparkSession
+    cost_schema_df = spark.createDataFrame(
+        cost_map_rows,
+        schema=["rocket_name", "_base_cost", "_cost_per_kg", "_category"],
+    )
+
+    df = (
+        launches_silver.alias("l")
+        .join(cost_schema_df.alias("c"), F.col("l.rocket_name") == F.col("c.rocket_name"), "left")
+        .select(
+            F.col("l.launch_id"),
+            F.col("l.rocket_name"),
+            F.col("l.provider_name"),
+            F.col("l.launch_year"),
+            F.col("l.mission_type"),
+            F.col("l.is_success"),
+            F.coalesce(F.col("c._base_cost"), F.lit(50_000_000)).cast("long").alias("estimated_cost_usd"),
+            F.coalesce(F.col("c._cost_per_kg"), F.lit(5000)).cast("long").alias("cost_per_kg_leo_usd"),
+            F.coalesce(F.col("c._category"), F.lit("Standard")).alias("cost_category"),
+        )
+    )
+    return df
+
+
 def build_gold_company_year_metrics(launches_silver: DataFrame) -> DataFrame:
     return launches_silver.groupBy("launch_year", "provider_name").agg(
         F.count("launch_id").alias("total_launches"),
@@ -227,6 +285,9 @@ def main() -> None:
     write_parquet(weather_silver, silver_base_dir / "weather", ["weather_year"])
     write_parquet(rockets_silver, silver_base_dir / "spacex_rockets")
     write_parquet(images_silver, silver_base_dir / "images", ["source", "launch_year"])
+
+    launch_costs_silver = build_silver_launch_costs(launches_silver)
+    write_parquet(launch_costs_silver, silver_base_dir / "launch_costs", ["launch_year"])
 
     company_year_gold = build_gold_company_year_metrics(launches_silver)
     launch_features_gold = build_gold_launch_features(launches_silver, weather_silver, images_silver)

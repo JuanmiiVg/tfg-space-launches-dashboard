@@ -278,6 +278,19 @@ def load_images() -> pd.DataFrame:
 
 
 @st.cache_data(show_spinner=False)
+def load_costs() -> pd.DataFrame:
+    df = _parquet(str(ROOT / "data" / "silver" / "launch_costs"), "costs")
+    if df.empty:
+        return df
+    if "launch_year" in df.columns:
+        df = _coerce_year(df)
+    for col in ("estimated_cost_usd", "cost_per_kg_leo_usd", "is_success"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    return df
+
+
+@st.cache_data(show_spinner=False)
 def _rocket_image(rocket_name: str) -> str | None:
     """Return first flickr image URL for a SpaceX rocket from the raw JSON, if available."""
     raw_dir = ROOT / "data" / "raw"
@@ -1648,6 +1661,477 @@ def tab_simulador(rockets_df: pd.DataFrame) -> None:
         st.plotly_chart(fig2, use_container_width=True, theme=None)
 
 
+# ── Tab 9: Costos ─────────────────────────────────────────────────────────────
+
+def tab_costos(costs_df: pd.DataFrame) -> None:
+    if costs_df.empty or "estimated_cost_usd" not in costs_df.columns:
+        st.info("No se encontraron datos de costes. Asegúrate de que `dashboard/data/costs.parquet` existe.")
+        return
+
+    df = costs_df.dropna(subset=["estimated_cost_usd"]).copy()
+
+    # ── KPIs ──
+    total_inv = df["estimated_cost_usd"].sum()
+    avg_cost = df["estimated_cost_usd"].mean()
+    n_launches = len(df)
+    n_providers = df["provider_name"].nunique() if "provider_name" in df.columns else 0
+    success_mask = df["is_success"] == 1 if "is_success" in df.columns else pd.Series([True] * len(df))
+    cost_success = df.loc[success_mask, "estimated_cost_usd"].mean() if success_mask.any() else np.nan
+
+    k1, k2, k3, k4, k5 = st.columns(5)
+    k1.metric("Inversión Total Estimada", f"${total_inv/1e9:.1f}B")
+    k2.metric("Coste Promedio/Lanzamiento", f"${avg_cost/1e6:.1f}M")
+    k3.metric("Coste Medio en Éxitos", f"${cost_success/1e6:.1f}M" if not np.isnan(cost_success) else "—")
+    k4.metric("Lanzamientos Analizados", f"{n_launches:,}")
+    k5.metric("Proveedores", str(n_providers))
+
+    st.markdown("---")
+
+    # ── Fila 1: Coste por proveedor + Evolución temporal ──
+    st.markdown('<div class="sec-title">Coste Promedio por Proveedor y Evolución Temporal</div>', unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+
+    with c1:
+        prov_avg = (
+            df.groupby("provider_name")["estimated_cost_usd"]
+            .mean()
+            .sort_values(ascending=True)
+            .reset_index()
+        )
+        fig = go.Figure(go.Bar(
+            x=(prov_avg["estimated_cost_usd"] / 1e6).round(1).tolist(),
+            y=prov_avg["provider_name"].tolist(),
+            orientation="h",
+            marker=dict(
+                color=(prov_avg["estimated_cost_usd"] / 1e6).tolist(),
+                colorscale=[[0, C["success"]], [0.5, C["accent"]], [1, C["warning"]]],
+                showscale=False,
+            ),
+            text=[f"${v:.0f}M" for v in (prov_avg["estimated_cost_usd"] / 1e6)],
+            textposition="outside",
+        ))
+        fig.update_layout(**layout(
+            title=dict(text="Coste Promedio por Lanzamiento (USD M)", font=dict(size=13)),
+            xaxis=dict(title="Millones USD"),
+            yaxis=dict(title=""),
+            margin=dict(l=150, r=60, t=45, b=40),
+        ))
+        st.plotly_chart(fig, use_container_width=True, theme=None)
+
+    with c2:
+        top5 = (
+            df.groupby("provider_name")["estimated_cost_usd"]
+            .mean()
+            .nlargest(5)
+            .index.tolist()
+        )
+        yearly_prov = (
+            df[df["provider_name"].isin(top5)]
+            .groupby(["launch_year", "provider_name"])["estimated_cost_usd"]
+            .mean()
+            .reset_index()
+            .sort_values("launch_year")
+        )
+        fig = go.Figure()
+        for i, prov in enumerate(top5):
+            sub = yearly_prov[yearly_prov["provider_name"] == prov]
+            if sub.empty:
+                continue
+            fig.add_trace(go.Scatter(
+                x=sub["launch_year"].tolist(),
+                y=(sub["estimated_cost_usd"] / 1e6).round(1).tolist(),
+                mode="lines+markers",
+                name=prov,
+                line=dict(color=PALETTE[i % len(PALETTE)], width=2),
+                marker=dict(size=5),
+            ))
+        fig.update_layout(**layout(
+            title=dict(text="Evolución del Coste — Top 5 Proveedores (USD M)", font=dict(size=13)),
+            xaxis=dict(title="Año"),
+            yaxis=dict(title="Coste Promedio (M USD)"),
+        ))
+        st.plotly_chart(fig, use_container_width=True, theme=None)
+
+    # ── Fila 2: Inversión total por año + Coste vs Tasa de éxito ──
+    st.markdown('<div class="sec-title">Inversión Total por Año y Relación Coste–Éxito</div>', unsafe_allow_html=True)
+    c3, c4 = st.columns(2)
+
+    with c3:
+        yearly_inv = (
+            df.groupby("launch_year")["estimated_cost_usd"]
+            .sum()
+            .reset_index()
+            .sort_values("launch_year")
+        )
+        fig = go.Figure(go.Bar(
+            x=yearly_inv["launch_year"].astype(int).tolist(),
+            y=(yearly_inv["estimated_cost_usd"] / 1e9).round(3).tolist(),
+            marker=dict(color=C["accent"], opacity=0.85),
+            text=[(f"${v:.2f}B") for v in (yearly_inv["estimated_cost_usd"] / 1e9)],
+            textposition="outside",
+        ))
+        fig.update_layout(**layout(
+            title=dict(text="Inversión Total Estimada por Año (USD B)", font=dict(size=13)),
+            xaxis=dict(title="Año", dtick=2),
+            yaxis=dict(title="Miles de Millones USD"),
+        ))
+        st.plotly_chart(fig, use_container_width=True, theme=None)
+
+    with c4:
+        if "is_success" in df.columns:
+            prov_stats = (
+                df.groupby("provider_name")
+                .agg(
+                    avg_cost=("estimated_cost_usd", "mean"),
+                    success_rate=("is_success", "mean"),
+                    n=("estimated_cost_usd", "count"),
+                )
+                .reset_index()
+            )
+            prov_stats["success_pct"] = (prov_stats["success_rate"] * 100).round(1)
+            fig = go.Figure()
+            for i, row in prov_stats.iterrows():
+                fig.add_trace(go.Scatter(
+                    x=[row["avg_cost"] / 1e6],
+                    y=[row["success_pct"]],
+                    mode="markers+text",
+                    name=row["provider_name"],
+                    marker=dict(
+                        size=max(10, min(40, row["n"] / 5)),
+                        color=PALETTE[i % len(PALETTE)],
+                        opacity=0.85,
+                        line=dict(color="white", width=1),
+                    ),
+                    text=[row["provider_name"].split()[0]],
+                    textposition="top center",
+                    textfont=dict(size=9),
+                    showlegend=False,
+                ))
+            fig.update_layout(**layout(
+                title=dict(text="Coste Promedio vs Tasa de Éxito por Proveedor", font=dict(size=13)),
+                xaxis=dict(title="Coste Promedio (M USD)"),
+                yaxis=dict(title="Tasa de Éxito (%)"),
+            ))
+            st.plotly_chart(fig, use_container_width=True, theme=None)
+        else:
+            st.info("Sin datos de éxito disponibles.")
+
+    # ── Fila 3: Distribución por categoría + Coste por tipo de misión ──
+    st.markdown('<div class="sec-title">Distribución por Categoría y Tipo de Misión</div>', unsafe_allow_html=True)
+    c5, c6 = st.columns(2)
+
+    with c5:
+        if "cost_category" in df.columns:
+            cat_data = (
+                df.groupby("cost_category")["estimated_cost_usd"]
+                .agg(["count", "mean"])
+                .reset_index()
+                .rename(columns={"count": "lanzamientos", "mean": "avg_cost"})
+            )
+            cat_colors = {"Budget": C["success"], "Standard": C["accent"],
+                          "Premium": C["warning"], "Heavy": C["failure"]}
+            fig = go.Figure(go.Pie(
+                labels=cat_data["cost_category"].tolist(),
+                values=cat_data["lanzamientos"].tolist(),
+                hole=0.45,
+                marker=dict(colors=[cat_colors.get(c, C["muted"]) for c in cat_data["cost_category"]]),
+                textinfo="label+percent",
+                textfont=dict(size=11),
+            ))
+            fig.update_layout(**layout(
+                title=dict(text="Lanzamientos por Categoría de Coste", font=dict(size=13)),
+                showlegend=True,
+                margin=dict(l=20, r=20, t=45, b=20),
+            ))
+            st.plotly_chart(fig, use_container_width=True, theme=None)
+        else:
+            st.info("Sin datos de categoría.")
+
+    with c6:
+        if "mission_type" in df.columns:
+            mission_cost = (
+                df.groupby("mission_type")["estimated_cost_usd"]
+                .mean()
+                .sort_values(ascending=False)
+                .reset_index()
+            )
+            fig = go.Figure(go.Bar(
+                x=mission_cost["mission_type"].tolist(),
+                y=(mission_cost["estimated_cost_usd"] / 1e6).round(1).tolist(),
+                marker=dict(
+                    color=(mission_cost["estimated_cost_usd"] / 1e6).tolist(),
+                    colorscale=[[0, C["accent"]], [1, C["warning"]]],
+                    showscale=False,
+                ),
+            ))
+            fig.update_layout(**layout(
+                title=dict(text="Coste Promedio por Tipo de Misión (USD M)", font=dict(size=13)),
+                xaxis=dict(title="", tickangle=-30),
+                yaxis=dict(title="M USD"),
+            ))
+            st.plotly_chart(fig, use_container_width=True, theme=None)
+        else:
+            st.info("Sin datos de tipo de misión.")
+
+
+# ── Tab 10: Asistente IA ──────────────────────────────────────────────────────
+
+def _build_chat_context(
+    costs_df: pd.DataFrame,
+    metrics_df: pd.DataFrame,
+    features_df: pd.DataFrame,
+    rockets_df: pd.DataFrame,
+) -> str:
+    lines: list[str] = ["# Space Launches — Datos del Dashboard\n"]
+
+    if not metrics_df.empty and "total_launches" in metrics_df.columns:
+        yr_min = int(metrics_df["launch_year"].min())
+        yr_max = int(metrics_df["launch_year"].max())
+        total = int(metrics_df["total_launches"].sum())
+        lines += [
+            "## Resumen general",
+            f"- Periodo: {yr_min}–{yr_max}",
+            f"- Total lanzamientos: {total:,}",
+        ]
+        if "successful_launches" in metrics_df.columns:
+            succ = int(metrics_df["successful_launches"].sum())
+            lines.append(f"- Exitosos: {succ:,} ({succ/max(total,1)*100:.1f}%)")
+        lines.append("")
+
+    if not metrics_df.empty and "provider_name" in metrics_df.columns:
+        top = (
+            metrics_df.groupby("provider_name")["total_launches"]
+            .sum().nlargest(10).reset_index()
+        )
+        lines.append("## Top 10 proveedores")
+        for _, row in top.iterrows():
+            pn = row["provider_name"]
+            n = int(row["total_launches"])
+            sr_rows = metrics_df[metrics_df["provider_name"] == pn]
+            if "success_rate_pct" in sr_rows.columns:
+                sr = sr_rows["success_rate_pct"].mean()
+                lines.append(f"- {pn}: {n} lanzamientos, tasa éxito {sr:.1f}%")
+            else:
+                lines.append(f"- {pn}: {n} lanzamientos")
+        lines.append("")
+
+    if not costs_df.empty and "estimated_cost_usd" in costs_df.columns:
+        total_inv = costs_df["estimated_cost_usd"].sum() / 1e9
+        avg_cost = costs_df["estimated_cost_usd"].mean() / 1e6
+        lines += [
+            "## Costes de lanzamiento (estimados)",
+            f"- Inversión total: ${total_inv:.1f}B USD",
+            f"- Coste promedio: ${avg_cost:.1f}M USD/lanzamiento",
+        ]
+        if "cost_category" in costs_df.columns:
+            cats = costs_df["cost_category"].value_counts()
+            lines.append("- Categorías: " + ", ".join(f"{k}={v}" for k, v in cats.items()))
+        if "provider_name" in costs_df.columns:
+            prov_avg = (
+                costs_df.groupby("provider_name")["estimated_cost_usd"]
+                .mean().sort_values(ascending=False)
+            )
+            lines.append("- Coste medio por proveedor:")
+            for prov, cost in prov_avg.items():
+                lines.append(f"  - {prov}: ${cost/1e6:.1f}M")
+        if "rocket_name" in costs_df.columns:
+            rkt_top = costs_df.groupby("rocket_name")["estimated_cost_usd"].mean().nlargest(8)
+            lines.append("- Cohetes más caros:")
+            for rkt, cost in rkt_top.items():
+                lines.append(f"  - {rkt}: ${cost/1e6:.1f}M")
+        lines.append("")
+
+    if not features_df.empty:
+        if "mission_type" in features_df.columns:
+            mt = features_df["mission_type"].value_counts().head(10)
+            lines.append("## Tipos de misión")
+            for k, v in mt.items():
+                lines.append(f"- {k}: {v}")
+            lines.append("")
+        if "mission_orbit" in features_df.columns:
+            orb = features_df["mission_orbit"].value_counts().head(8)
+            lines.append("## Órbitas")
+            for k, v in orb.items():
+                lines.append(f"- {k}: {v}")
+            lines.append("")
+        if "pad_country_code" in features_df.columns:
+            countries = features_df["pad_country_code"].value_counts().head(8)
+            lines.append("## Países con más lanzamientos")
+            for k, v in countries.items():
+                lines.append(f"- {k}: {v}")
+            lines.append("")
+        if "rocket_name" in features_df.columns:
+            rkt = features_df["rocket_name"].value_counts().head(10)
+            lines.append("## Cohetes más usados")
+            for k, v in rkt.items():
+                lines.append(f"- {k}: {v} lanzamientos")
+            lines.append("")
+
+    if not rockets_df.empty:
+        lines.append("## Cohetes SpaceX (API oficial)")
+        for _, row in rockets_df.iterrows():
+            name = row.get("rocket_name", "?")
+            status = "Activo" if row.get("is_active") else "Inactivo"
+            cost_val = row.get("cost_per_launch_usd")
+            cost_str = f"${float(cost_val)/1e6:.0f}M" if pd.notna(cost_val) else "N/D"
+            sr_val = row.get("success_rate_pct")
+            sr_str = f"{float(sr_val):.0f}%" if pd.notna(sr_val) else "N/D"
+            h_val = row.get("height_meters")
+            h_str = f"{float(h_val):.0f}m" if pd.notna(h_val) else "N/D"
+            m_val = row.get("mass_kg")
+            m_str = f"{float(m_val)/1000:.0f}t" if pd.notna(m_val) else "N/D"
+            first = row.get("first_flight_date", "N/D")
+            desc = str(row.get("description") or "")
+            lines.append(f"### {name}")
+            lines.append(f"- Estado: {status} | Coste: {cost_str} | Éxito: {sr_str} | Altura: {h_str} | Masa: {m_str} | Primer vuelo: {first}")
+            if desc:
+                lines.append(f"- {desc[:300]}{'...' if len(desc)>300 else ''}")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def tab_asistente(
+    costs_df: pd.DataFrame,
+    metrics_df: pd.DataFrame,
+    features_df: pd.DataFrame,
+    rockets_df: pd.DataFrame,
+) -> None:
+    import httpx
+    import json as _json
+
+    api_key: str = st.secrets.get("GROQ_API_KEY", "")
+    if not api_key:
+        st.error("Falta `GROQ_API_KEY` en `.streamlit/secrets.toml`.")
+        return
+
+    st.markdown('<div class="sec-title">Asistente IA — Space Launches</div>', unsafe_allow_html=True)
+
+    with st.expander("ℹ️ ¿Sobre qué puedo preguntarme?", expanded=False):
+        st.markdown("""
+**Datos del dashboard:** lanzamientos por año, proveedores, tasas de éxito, costes estimados, tipos de misión, órbitas, países.
+
+**SpaceX:** detalles técnicos de Falcon 9, Falcon Heavy, Starship, Dragon, etc.
+
+**General:** física orbital, historia espacial, agencias (NASA, ESA, Roscosmos…), cohetes de otras empresas, astronomía.
+        """)
+
+    col_btn, _ = st.columns([1, 5])
+    with col_btn:
+        if st.button("🗑️ Limpiar chat", use_container_width=True):
+            st.session_state["chat_messages"] = []
+            st.rerun()
+
+    if "chat_messages" not in st.session_state:
+        st.session_state["chat_messages"] = []
+
+    if "chat_data_context" not in st.session_state:
+        st.session_state["chat_data_context"] = _build_chat_context(
+            costs_df, metrics_df, features_df, rockets_df
+        )
+
+    for msg in st.session_state["chat_messages"]:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    with st.form(key="chat_form", clear_on_submit=True):
+        col_in, col_btn2 = st.columns([6, 1])
+        with col_in:
+            user_input = st.text_input(
+                "", placeholder="Pregunta sobre lanzamientos espaciales…",
+                label_visibility="collapsed",
+            )
+        with col_btn2:
+            submitted = st.form_submit_button("Enviar ➤", use_container_width=True)
+
+    prompt = user_input.strip() if submitted and user_input.strip() else None
+    if not prompt:
+        return
+
+    st.session_state["chat_messages"].append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    system_text = (
+        "Eres un asistente experto en astronáutica y exploración espacial. "
+        "Respondes siempre en español, de forma clara, precisa y amigable. "
+        "Cuando te pregunten sobre los datos del dashboard, usa únicamente la información "
+        "proporcionada a continuación. Para preguntas generales sobre espacio, "
+        "física orbital o historia espacial usa tu conocimiento general.\n\n"
+        + st.session_state["chat_data_context"]
+    )
+
+    messages = [
+        {"role": m["role"], "content": m["content"]}
+        for m in st.session_state["chat_messages"]
+    ]
+
+    # Groq — modelos gratuitos en orden de preferencia
+    _MODELS = [
+        "llama-3.3-70b-versatile",   # mejor calidad
+        "llama-3.1-8b-instant",      # más rápido, fallback
+    ]
+    _GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+    def _call_model(model: str):
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+        body = {
+            "model": model,
+            "messages": [{"role": "system", "content": system_text}, *messages],
+            "stream": True,
+            "max_tokens": 1024,
+        }
+        with httpx.stream("POST", _GROQ_URL, headers=headers, json=body, timeout=60.0) as resp:
+            resp.raise_for_status()
+            for line in resp.iter_lines():
+                if not line.startswith("data: "):
+                    continue
+                data = line[6:].strip()
+                if data == "[DONE]":
+                    return
+                try:
+                    chunk = _json.loads(data)
+                    delta = chunk["choices"][0]["delta"].get("content") or ""
+                    if delta:
+                        yield delta
+                except (ValueError, KeyError, IndexError):
+                    pass
+
+    with st.chat_message("assistant"):
+        placeholder = st.empty()
+        full_response = ""
+        success = False
+        for model in _MODELS:
+            try:
+                full_response = ""
+                for token in _call_model(model):
+                    full_response += token
+                    placeholder.markdown(full_response + "▌")
+                placeholder.markdown(full_response)
+                success = True
+                break
+            except httpx.HTTPStatusError as exc:
+                code = exc.response.status_code
+                if code == 429:
+                    import time as _time
+                    placeholder.info(f"⏳ Rate limit en `{model}`, probando fallback…")
+                    _time.sleep(3)
+                    continue
+                placeholder.error(f"Error HTTP {code} en `{model}`.")
+                return
+            except Exception as exc:
+                placeholder.error(f"Error de API: {exc}")
+                return
+        if not success:
+            placeholder.warning("Límite de peticiones alcanzado. Espera unos segundos e inténtalo de nuevo.")
+            return
+
+    st.session_state["chat_messages"].append({"role": "assistant", "content": full_response})
+
+
 # ── Tabla final ────────────────────────────────────────────────────────────────
 
 def render_table(ff: pd.DataFrame) -> None:
@@ -1690,6 +2174,7 @@ def main() -> None:
         rockets_df = load_rockets()
         raw_df = load_raw_jsonl()
         img_df = load_images()
+        costs_df = load_costs()
 
     if mf_all.empty:
         st.error("No se encontraron datos en `data/gold/`. Ejecuta primero el pipeline de procesamiento.")
@@ -1769,7 +2254,7 @@ def main() -> None:
     st.markdown("---")
 
     # ── Tabs ──
-    t1, t2, t3, t4, t5, t6, t7, t8 = st.tabs([
+    t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 = st.tabs([
         "📈 Histórico",
         "🏢 Proveedores",
         "🛸 Misiones & Órbitas",
@@ -1778,6 +2263,8 @@ def main() -> None:
         "🌤️ Meteorología",
         "🖼️ Galería",
         "🎮 Simulador",
+        "💰 Costos de Lanzamiento",
+        "🤖 Asistente IA",
     ])
     with t1:
         tab_historico(mf, ff)
@@ -1795,6 +2282,10 @@ def main() -> None:
         tab_galeria(img_df)
     with t8:
         tab_simulador(rockets_df)
+    with t9:
+        tab_costos(costs_df)
+    with t10:
+        tab_asistente(costs_df, mf_all, ff_all, rockets_df)
 
     st.markdown("---")
     render_table(ff)

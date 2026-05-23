@@ -23,6 +23,10 @@ Thumbs.db
 # Claude Code AI memory (local only)
 .claude/
 
+# Streamlit secrets (API keys — never commit)
+.streamlit/secrets.toml
+dashboard/.streamlit/secrets.toml
+
 # Generated documents (local only)
 overleaf_tfg/
 output_docs/
