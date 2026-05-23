@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="banner.svg" alt="Space Launches Intelligence Platform" width="900"/>
+</p>
+
 # Proyecto Integrador
 
 ## Análisis y Predicción de Lanzamientos Espaciales con Big Data y BI

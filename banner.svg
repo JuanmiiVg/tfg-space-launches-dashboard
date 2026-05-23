@@ -1,0 +1,342 @@
+<svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" width="900" height="260">
+<defs>
+<style>
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-9px); }
+  }
+  @keyframes burnOuter {
+    0%   { transform: scaleX(1)    scaleY(1);    opacity:.92; }
+    50%  { transform: scaleX(.82)  scaleY(1.14); opacity:.85; }
+    100% { transform: scaleX(1.12) scaleY(.93);  opacity:.95; }
+  }
+  @keyframes burnInner {
+    0%   { transform: scaleX(.72) scaleY(1);    opacity:1;   }
+    50%  { transform: scaleX(.58) scaleY(1.18); opacity:.88; }
+    100% { transform: scaleX(.82) scaleY(.9);   opacity:.96; }
+  }
+  @keyframes particle {
+    0%   { opacity:.85; transform: translateY(0px)   scale(1);   }
+    100% { opacity:0;   transform: translateY(32px)  scale(.25); }
+  }
+  @keyframes twinkA {
+    0%,100% { opacity:.15; } 50% { opacity:1; }
+  }
+  @keyframes twinkB {
+    0%,100% { opacity:.8; }  50% { opacity:.12; }
+  }
+  @keyframes twinkC {
+    0%,100% { opacity:.4; }  50% { opacity:.95; }
+  }
+  @keyframes glowPulse {
+    0%,100% { opacity:.45; } 50% { opacity:.85; }
+  }
+  @keyframes orbitSpin {
+    from { transform: rotate(0deg);   }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes scanMove {
+    0%   { transform: translateY(-50px); opacity:0; }
+    8%   { opacity:.12; }
+    92%  { opacity:.12; }
+    100% { transform: translateY(310px); opacity:0; }
+  }
+
+  .rocketG      { animation: float     3.2s ease-in-out infinite; transform-origin: 760px 148px; }
+  .fOuter       { animation: burnOuter  .13s ease-in-out infinite alternate; transform-origin: 760px 192px; }
+  .fMid         { animation: burnOuter  .13s ease-in-out infinite alternate .04s; transform-origin: 760px 192px; }
+  .fInner       { animation: burnInner  .16s ease-in-out infinite alternate; transform-origin: 760px 192px; }
+  .p1 { animation: particle .55s ease-out infinite;       }
+  .p2 { animation: particle .55s ease-out infinite .11s;  }
+  .p3 { animation: particle .55s ease-out infinite .22s;  }
+  .p4 { animation: particle .55s ease-out infinite .33s;  }
+  .p5 { animation: particle .55s ease-out infinite .44s;  }
+  .sA { animation: twinkA 1.9s ease-in-out infinite;      }
+  .sB { animation: twinkA 2.4s ease-in-out infinite .5s;  }
+  .sC { animation: twinkA 1.6s ease-in-out infinite .9s;  }
+  .sD { animation: twinkB 2.8s ease-in-out infinite .2s;  }
+  .sE { animation: twinkB 2.0s ease-in-out infinite .7s;  }
+  .sF { animation: twinkC 1.7s ease-in-out infinite .4s;  }
+  .eGlow        { animation: glowPulse  2s   ease-in-out infinite; }
+  .orbitRing    { animation: orbitSpin 14s   linear     infinite; transform-origin: 128px 128px; }
+  .scan         { animation: scanMove   7s   linear     infinite; }
+</style>
+
+<!-- ── Gradients ── -->
+<radialGradient id="bgG"   cx="55%" cy="45%" r="75%">
+  <stop offset="0%"   stop-color="#0d1b2a"/>
+  <stop offset="100%" stop-color="#060d1a"/>
+</radialGradient>
+<linearGradient id="bodyG" x1="0%" y1="0%" x2="100%" y2="0%">
+  <stop offset="0%"   stop-color="#1e3a5f"/>
+  <stop offset="40%"  stop-color="#2d5986"/>
+  <stop offset="60%"  stop-color="#2d5986"/>
+  <stop offset="100%" stop-color="#1a3050"/>
+</linearGradient>
+<linearGradient id="noseG" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%"   stop-color="#e2e8f0"/>
+  <stop offset="100%" stop-color="#94a3b8"/>
+</linearGradient>
+<linearGradient id="flmO"  x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%"   stop-color="#facc15"/>
+  <stop offset="45%"  stop-color="#fb923c"/>
+  <stop offset="100%" stop-color="#ef4444" stop-opacity=".3"/>
+</linearGradient>
+<linearGradient id="flmI"  x1="0%" y1="0%" x2="0%" y2="100%">
+  <stop offset="0%"   stop-color="#fef9c3"/>
+  <stop offset="55%"  stop-color="#facc15"/>
+  <stop offset="100%" stop-color="#fb923c" stop-opacity=".4"/>
+</linearGradient>
+<radialGradient id="winG"  cx="50%" cy="50%" r="50%">
+  <stop offset="0%"   stop-color="#7dd3fc"/>
+  <stop offset="60%"  stop-color="#00b4d8"/>
+  <stop offset="100%" stop-color="#0369a1"/>
+</radialGradient>
+<radialGradient id="plnG"  cx="32%" cy="32%" r="68%">
+  <stop offset="0%"   stop-color="#1e40af"/>
+  <stop offset="68%"  stop-color="#1e3a8a"/>
+  <stop offset="100%" stop-color="#0f172a"/>
+</radialGradient>
+<radialGradient id="engG"  cx="50%" cy="0%" r="100%">
+  <stop offset="0%"   stop-color="#fb923c" stop-opacity=".55"/>
+  <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+</radialGradient>
+<filter id="gFx" x="-30%" y="-30%" width="160%" height="160%">
+  <feGaussianBlur stdDeviation="3.5" result="b"/>
+  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+<filter id="tFx" x="-20%" y="-20%" width="140%" height="140%">
+  <feGaussianBlur stdDeviation="5" result="b"/>
+  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+<clipPath id="clip">
+  <rect width="900" height="260" rx="14"/>
+</clipPath>
+</defs>
+
+<!-- BG -->
+<rect width="900" height="260" rx="14" fill="url(#bgG)"/>
+
+<g clip-path="url(#clip)">
+
+<!-- Scanline sweep -->
+<rect class="scan" x="0" y="-50" width="900" height="45" fill="rgba(0,180,216,.04)"/>
+
+<!-- ── Stars ── -->
+<circle class="sA" cx="45"  cy="18"  r="1.4" fill="#fff"/>
+<circle class="sA" cx="118" cy="52"  r="1.1" fill="#e2e8f0"/>
+<circle class="sA" cx="202" cy="13"  r="1.4" fill="#fff"/>
+<circle class="sA" cx="285" cy="38"  r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="355" cy="78"  r="1.2" fill="#fff"/>
+<circle class="sA" cx="432" cy="22"  r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="502" cy="58"  r="1.4" fill="#fff"/>
+<circle class="sA" cx="572" cy="28"  r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="618" cy="68"  r="1.2" fill="#fff"/>
+<circle class="sA" cx="82"  cy="138" r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="162" cy="178" r="1.4" fill="#fff"/>
+<circle class="sA" cx="248" cy="128" r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="328" cy="168" r="1.2" fill="#fff"/>
+<circle class="sA" cx="402" cy="198" r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="472" cy="148" r="1.4" fill="#fff"/>
+<circle class="sA" cx="542" cy="188" r="1"   fill="#e2e8f0"/>
+<circle class="sA" cx="28"  cy="228" r="1.2" fill="#fff"/>
+<circle class="sA" cx="188" cy="242" r="1"   fill="#e2e8f0"/>
+
+<circle class="sB" cx="92"  cy="88"  r="1.2" fill="#bae6fd"/>
+<circle class="sB" cx="168" cy="108" r="1"   fill="#bae6fd"/>
+<circle class="sB" cx="262" cy="72"  r="1.4" fill="#fff"/>
+<circle class="sB" cx="312" cy="112" r="1"   fill="#bae6fd"/>
+<circle class="sB" cx="382" cy="42"  r="1.2" fill="#fff"/>
+<circle class="sB" cx="452" cy="102" r="1"   fill="#bae6fd"/>
+<circle class="sB" cx="522" cy="38"  r="1.4" fill="#fff"/>
+<circle class="sB" cx="582" cy="88"  r="1"   fill="#bae6fd"/>
+<circle class="sB" cx="102" cy="198" r="1.2" fill="#fff"/>
+<circle class="sB" cx="222" cy="212" r="1"   fill="#bae6fd"/>
+<circle class="sB" cx="362" cy="218" r="1.4" fill="#fff"/>
+<circle class="sB" cx="492" cy="228" r="1"   fill="#bae6fd"/>
+
+<circle class="sC" cx="138" cy="32"  r="1"   fill="#67e8f9"/>
+<circle class="sC" cx="232" cy="98"  r="1.2" fill="#67e8f9"/>
+<circle class="sC" cx="392" cy="132" r="1"   fill="#67e8f9"/>
+<circle class="sC" cx="462" cy="52"  r="1.2" fill="#67e8f9"/>
+<circle class="sC" cx="52"  cy="168" r="1"   fill="#67e8f9"/>
+<circle class="sC" cx="302" cy="192" r="1.2" fill="#67e8f9"/>
+<circle class="sC" cx="422" cy="172" r="1"   fill="#67e8f9"/>
+
+<circle class="sD" cx="34"  cy="58"  r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="108" cy="14"  r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="184" cy="142" r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="268" cy="162" r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="338" cy="22"  r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="418" cy="82"  r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="508" cy="118" r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="558" cy="152" r=".8"  fill="#94a3b8"/>
+<circle class="sD" cx="142" cy="248" r=".8"  fill="#94a3b8"/>
+
+<circle class="sE" cx="74"  cy="44"  r="1"   fill="#fff"/>
+<circle class="sE" cx="154" cy="68"  r=".8"  fill="#fff"/>
+<circle class="sE" cx="322" cy="58"  r="1"   fill="#fff"/>
+<circle class="sE" cx="482" cy="138" r=".8"  fill="#fff"/>
+<circle class="sE" cx="128" cy="158" r="1"   fill="#fff"/>
+<circle class="sE" cx="288" cy="232" r=".8"  fill="#fff"/>
+<circle class="sE" cx="442" cy="244" r="1"   fill="#fff"/>
+
+<circle class="sF" cx="62"  cy="118" r=".9"  fill="#a5f3fc"/>
+<circle class="sF" cx="178" cy="58"  r=".9"  fill="#a5f3fc"/>
+<circle class="sF" cx="348" cy="148" r=".9"  fill="#a5f3fc"/>
+<circle class="sF" cx="534" cy="72"  r=".9"  fill="#a5f3fc"/>
+
+<!-- ── Planet ── -->
+<circle cx="128" cy="128" r="56" fill="url(#plnG)" opacity=".88"/>
+<!-- surface detail -->
+<ellipse cx="112" cy="113" rx="13" ry="8"  fill="#1e3a8a" opacity=".55"/>
+<ellipse cx="148" cy="143" rx="9"  ry="5.5" fill="#1e3a8a" opacity=".45"/>
+<ellipse cx="122" cy="148" rx="5"  ry="3"  fill="#1e40af" opacity=".4"/>
+<!-- shine -->
+<ellipse cx="113" cy="106" rx="19" ry="10" fill="rgba(147,197,253,.13)"/>
+<!-- rings (static, subtle) -->
+<ellipse cx="128" cy="128" rx="82" ry="19" fill="none" stroke="#60a5fa" stroke-width="1.4" opacity=".28" transform="rotate(-14,128,128)"/>
+<ellipse cx="128" cy="128" rx="73" ry="14" fill="none" stroke="#93c5fd" stroke-width=".7"  opacity=".16" transform="rotate(-14,128,128)"/>
+
+<!-- orbit ring with satellite -->
+<g class="orbitRing">
+  <ellipse cx="128" cy="128" rx="82" ry="19" fill="none" stroke="#00b4d8"
+           stroke-width=".9" stroke-dasharray="5 9" opacity=".48"
+           transform="rotate(-14,128,128)"/>
+  <circle cx="209" cy="124" r="3.2" fill="#00b4d8" opacity=".85" filter="url(#gFx)"/>
+</g>
+
+<!-- horizon glow -->
+<ellipse cx="128" cy="158" rx="62" ry="14" fill="rgba(0,180,216,.07)"/>
+
+<!-- ── Text block ── -->
+<!-- Main title -->
+<text x="290" y="94"
+      font-family="'Courier New', Courier, monospace"
+      font-size="27" font-weight="900" letter-spacing="3.5"
+      fill="#00b4d8" filter="url(#tFx)">SPACE LAUNCHES</text>
+
+<text x="290" y="128"
+      font-family="'Courier New', Courier, monospace"
+      font-size="19" font-weight="700" letter-spacing="2.5"
+      fill="#e2e8f0" opacity=".92">Intelligence Platform</text>
+
+<!-- Divider -->
+<line x1="290" y1="141" x2="630" y2="141" stroke="#1e3a5f" stroke-width="1"/>
+
+<!-- Badges -->
+<rect x="290" y="149" width="82"  height="19" rx="9.5" fill="rgba(0,180,216,.1)"    stroke="#00b4d8" stroke-width=".9"/>
+<text x="331" y="163" font-family="'Courier New',monospace" font-size="9.5" fill="#00b4d8"  text-anchor="middle" letter-spacing=".6">PySpark</text>
+
+<rect x="380" y="149" width="78"  height="19" rx="9.5" fill="rgba(74,222,128,.08)"  stroke="#4ade80" stroke-width=".9"/>
+<text x="419" y="163" font-family="'Courier New',monospace" font-size="9.5" fill="#4ade80" text-anchor="middle" letter-spacing=".6">Streamlit</text>
+
+<rect x="466" y="149" width="64"  height="19" rx="9.5" fill="rgba(250,204,21,.07)"  stroke="#facc15" stroke-width=".9"/>
+<text x="498" y="163" font-family="'Courier New',monospace" font-size="9.5" fill="#facc15" text-anchor="middle" letter-spacing=".6">LLaMA AI</text>
+
+<rect x="538" y="149" width="64"  height="19" rx="9.5" fill="rgba(251,146,60,.07)"  stroke="#fb923c" stroke-width=".9"/>
+<text x="570" y="163" font-family="'Courier New',monospace" font-size="9.5" fill="#fb923c" text-anchor="middle" letter-spacing=".6">Docker</text>
+
+<!-- Description -->
+<text x="290" y="199"
+      font-family="Arial, sans-serif" font-size="11.5" fill="#64748b" letter-spacing=".4">
+  Pipeline Big Data · Medallion Architecture · Dashboard interactivo · Asistente IA
+</text>
+
+<!-- Stats -->
+<text x="290" y="230" font-family="'Courier New',monospace" font-size="15" font-weight="700" fill="#e2e8f0">1.500+</text>
+<text x="358" y="230" font-family="Arial,sans-serif"        font-size="10.5" fill="#64748b">lanzamientos</text>
+
+<text x="450" y="230" font-family="'Courier New',monospace" font-size="15" font-weight="700" fill="#e2e8f0">3</text>
+<text x="463" y="230" font-family="Arial,sans-serif"        font-size="10.5" fill="#64748b">APIs</text>
+
+<text x="498" y="230" font-family="'Courier New',monospace" font-size="15" font-weight="700" fill="#e2e8f0">10</text>
+<text x="518" y="230" font-family="Arial,sans-serif"        font-size="10.5" fill="#64748b">análisis</text>
+
+<text x="568" y="230" font-family="'Courier New',monospace" font-size="15" font-weight="700" fill="#4ade80">$0</text>
+<text x="585" y="230" font-family="Arial,sans-serif"        font-size="10.5" fill="#64748b">/mes</text>
+
+<!-- ── Rocket (animated group) ── -->
+<g class="rocketG">
+
+  <!-- Engine exhaust glow halo -->
+  <ellipse class="eGlow" cx="760" cy="193" rx="24" ry="11" fill="url(#engG)"/>
+
+  <!-- Flame particles trail -->
+  <circle class="p1" cx="754" cy="196" r="2.8" fill="#facc15"/>
+  <circle class="p2" cx="761" cy="199" r="2.2" fill="#fb923c"/>
+  <circle class="p3" cx="767" cy="197" r="1.8" fill="#fb923c"/>
+  <circle class="p4" cx="757" cy="201" r="1.6" fill="#ef4444"/>
+  <circle class="p5" cx="763" cy="198" r="2"   fill="#fbbf24"/>
+
+  <!-- Outer flame -->
+  <g class="fOuter">
+    <path d="M747,192 Q742,212 751,228 Q760,238 760,238 Q760,238 769,228 Q778,212 773,192 Z"
+          fill="url(#flmO)" opacity=".88"/>
+  </g>
+  <!-- Mid flame -->
+  <g class="fMid">
+    <path d="M751,192 Q748,208 755,221 Q760,230 760,230 Q760,230 765,221 Q772,208 769,192 Z"
+          fill="#fb923c" opacity=".82"/>
+  </g>
+  <!-- Inner flame (white-hot core) -->
+  <g class="fInner">
+    <path d="M755,192 Q753,205 757,215 Q760,222 760,222 Q760,222 763,215 Q767,205 765,192 Z"
+          fill="url(#flmI)" opacity="1"/>
+  </g>
+
+  <!-- Fins -->
+  <path d="M740,172 L730,198 L748,193 Z" fill="#1e3a5f" stroke="#2d5986" stroke-width=".8"/>
+  <path d="M780,172 L790,198 L772,193 Z" fill="#1e3a5f" stroke="#2d5986" stroke-width=".8"/>
+  <path d="M749,186 L743,197 L749,192 Z" fill="#162d4a"/>
+  <path d="M771,186 L777,197 L771,192 Z" fill="#162d4a"/>
+
+  <!-- Body -->
+  <rect x="740" y="98" width="40" height="94" rx="6" fill="url(#bodyG)"/>
+
+  <!-- Body panel lines -->
+  <line x1="744" y1="124" x2="776" y2="124" stroke="#2d5986" stroke-width=".8" opacity=".55"/>
+  <line x1="744" y1="148" x2="776" y2="148" stroke="#2d5986" stroke-width=".8" opacity=".55"/>
+  <line x1="744" y1="168" x2="776" y2="168" stroke="#2d5986" stroke-width=".8" opacity=".55"/>
+
+  <!-- Nose cone -->
+  <path d="M740,98 Q740,56 760,42 Q780,56 780,98 Z" fill="url(#noseG)"/>
+  <!-- Nose shading -->
+  <path d="M740,98 Q740,56 760,42 Q750,58 748,98 Z" fill="rgba(0,0,0,.14)"/>
+
+  <!-- Porthole window -->
+  <circle cx="760" cy="126" r="14" fill="#0c1a2e" stroke="#2d5986" stroke-width="1.5"/>
+  <circle cx="760" cy="126" r="10.5" fill="url(#winG)" opacity=".92" filter="url(#gFx)"/>
+  <!-- Window highlight -->
+  <ellipse cx="755" cy="121" rx="4.5" ry="2.8" fill="rgba(255,255,255,.32)"
+           transform="rotate(-28,755,121)"/>
+
+  <!-- Flag stripes (decorative) -->
+  <rect x="742" y="154" width="36" height="3"  rx="1.5" fill="#ef4444" opacity=".65"/>
+  <rect x="742" y="159" width="36" height="3"  rx="1.5" fill="#ffffff" opacity=".45"/>
+  <rect x="742" y="164" width="36" height="3"  rx="1.5" fill="#3b82f6" opacity=".65"/>
+
+  <!-- Engine nozzle bell -->
+  <path d="M747,192 L742,202 L778,202 L773,192 Z" fill="#0f172a" stroke="#1e3a5f" stroke-width="1"/>
+  <ellipse cx="760" cy="202" rx="18" ry="4.5" fill="#1e293b" stroke="#334155" stroke-width=".8"/>
+
+</g>
+
+<!-- Right edge data-stream dots -->
+<g opacity=".28">
+  <circle cx="842" cy="38"  r="1.6" fill="#00b4d8"/>
+  <circle cx="857" cy="64"  r="1"   fill="#00b4d8"/>
+  <circle cx="847" cy="90"  r="1.6" fill="#00b4d8"/>
+  <circle cx="866" cy="116" r="1"   fill="#00b4d8"/>
+  <circle cx="842" cy="142" r="1.6" fill="#00b4d8"/>
+  <circle cx="861" cy="168" r="1"   fill="#00b4d8"/>
+  <circle cx="849" cy="194" r="1.6" fill="#00b4d8"/>
+  <circle cx="868" cy="220" r="1"   fill="#00b4d8"/>
+  <circle cx="844" cy="246" r="1.6" fill="#00b4d8"/>
+</g>
+
+<!-- Border -->
+<rect width="900" height="260" rx="14" fill="none" stroke="#1e3a5f" stroke-width="1.5" opacity=".8"/>
+
+</g>
+</svg>

@@ -536,34 +536,34 @@
   <h2>Procesamiento con Apache Spark</h2>
   <div class="line"></div>
 
-  <div class="g2" style="margin-top:.8rem; align-items:start;">
+  <div class="g2" style="margin-top:.6rem; align-items:start;">
 
     <div>
-      <div class="card" style="margin-bottom:.7rem;">
+      <div class="card" style="margin-bottom:.5rem;">
         <div class="card-top silver"></div>
-        <h3 style="font-size:.75em; margin-bottom:.6em;">📥 Entradas (RAW)</h3>
-        <div class="pipeline" style="flex-direction:column; align-items:flex-start; gap:.3rem;">
-          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
-            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">launch_library_launches.jsonl</span>
+        <h3 style="font-size:.7em; margin-bottom:.4em;">📥 Entradas (RAW)</h3>
+        <div class="pipeline" style="flex-direction:column; align-items:flex-start; gap:.25rem;">
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%; padding:.35rem .7rem;">
+            <span style="font-size:.5em; font-family:monospace; color:var(--warning);">launch_library_launches.jsonl</span>
           </div>
-          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
-            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">spacex_rockets.json</span>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%; padding:.35rem .7rem;">
+            <span style="font-size:.5em; font-family:monospace; color:var(--warning);">spacex_rockets.json</span>
           </div>
-          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
-            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">open_meteo_samples.jsonl</span>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%; padding:.35rem .7rem;">
+            <span style="font-size:.5em; font-family:monospace; color:var(--warning);">open_meteo_samples.jsonl</span>
           </div>
-          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
-            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">spacex_launches_images.jsonl</span>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%; padding:.35rem .7rem;">
+            <span style="font-size:.5em; font-family:monospace; color:var(--warning);">spacex_launches_images.jsonl</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div>
-      <div class="card" style="margin-bottom:.7rem;">
+    <div style="display:flex; flex-direction:column; gap:.5rem;">
+      <div class="card">
         <div class="card-top"></div>
-        <h3 style="font-size:.75em; margin-bottom:.6em;">⚡ Transformaciones PySpark</h3>
-        <ul style="font-size:.54em;">
+        <h3 style="font-size:.7em; margin-bottom:.35em;">⚡ Transformaciones PySpark</h3>
+        <ul style="font-size:.5em;">
           <li>Selección y renombrado de columnas</li>
           <li>Casting de tipos (timestamp, double, int)</li>
           <li>Joins entre datasets (launches ⟕ weather)</li>
@@ -575,15 +575,15 @@
 
       <div class="card">
         <div class="card-top gold"></div>
-        <h3 style="font-size:.75em; margin-bottom:.6em;">📤 Salidas (Silver + Gold)</h3>
-        <div style="font-size:.52em; color:var(--muted);">
-          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">launches/</span>
-          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">weather/</span>
-          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">spacex_rockets/</span>
-          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">images/</span>
-          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">launch_costs/</span>
-          <span class="badge badge-gold"   style="font-size:.9em; margin:.1em;">company_year_metrics/</span>
-          <span class="badge badge-gold"   style="font-size:.9em; margin:.1em;">launch_features/</span>
+        <h3 style="font-size:.7em; margin-bottom:.35em;">📤 Salidas (Silver + Gold)</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:.25rem;">
+          <span class="badge badge-silver" style="font-size:.46em;">launches/</span>
+          <span class="badge badge-silver" style="font-size:.46em;">weather/</span>
+          <span class="badge badge-silver" style="font-size:.46em;">spacex_rockets/</span>
+          <span class="badge badge-silver" style="font-size:.46em;">images/</span>
+          <span class="badge badge-silver" style="font-size:.46em;">launch_costs/</span>
+          <span class="badge badge-gold"   style="font-size:.46em;">company_year_metrics/</span>
+          <span class="badge badge-gold"   style="font-size:.46em;">launch_features/</span>
         </div>
       </div>
     </div>

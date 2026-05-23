@@ -115,6 +115,30 @@
 
 ---
 
+## Slide 9b — Demo: Dashboard en Vivo — Histórico & Proveedores
+
+**Lo que ves:** Captura real del dashboard: gráfico de evolución histórica de lanzamientos por año a la izquierda, ranking de proveedores por tasa de éxito a la derecha.
+
+**Lo que dices:**
+- *"Esto es el dashboard real, desplegado en Streamlit Cloud ahora mismo."*
+- *"A la izquierda podéis ver la evolución año a año: cómo SpaceX parte de cero en 2010 y domina completamente el sector a partir de 2020."*
+- *"A la derecha, el ranking de proveedores: cada barra es la tasa de éxito histórica de esa agencia. Fijaos en el contraste entre agencias con décadas de historia y las privadas con pocos años pero tasas muy altas."*
+- *"Todo esto se filtra en tiempo real desde el sidebar: año, agencia, tipo de órbita."*
+
+---
+
+## Slide 9c — Demo: Dashboard en Vivo — Misiones & Geografía
+
+**Lo que ves:** Captura con la vista de misiones y el mapa Scattergeo mundial de sitios de lanzamiento.
+
+**Lo que dices:**
+- *"La pestaña de misiones muestra la distribución orbital: LEO, GEO, SSO... con la galería de imágenes de cada misión obtenidas directamente de la API."*
+- *"El mapa es uno de los elementos más visuales del dashboard: cada punto es un sitio de lanzamiento. El color representa la tasa de éxito —verde alto, rojo bajo— y el tamaño el volumen total de lanzamientos."*
+- *"De un solo vistazo ves que Cabo Cañaveral y Baikonur concentran el mayor volumen, pero que los sitios más nuevos en China y la India tienen tasas de éxito muy competitivas."*
+- *"Todo renderizado con Plotly, completamente interactivo: zoom, hover, clic."*
+
+---
+
 ## Slide 10 — Análisis Histórico
 
 **Lo que ves:** Cards con los análisis de las primeras pestañas.
@@ -124,6 +148,19 @@
 - *"El dato más llamativo: SpaceX multiplica por diez sus lanzamientos entre 2015 y 2023, pasando de ser un actor secundario a dominar el sector privado."*
 - *"El heatmap de proveedores muestra algo que no es obvio: las agencias privadas han superado en tasa de éxito a las gubernamentales a partir de 2018. La curva de aprendizaje en el sector privado es brutal."*
 - *"El mapa geográfico usa Plotly Scattergeo: el color de cada punto representa la tasa de éxito, y el tamaño el volumen de lanzamientos. De un vistazo ves dónde se lanza más y desde dónde se falla menos."*
+
+---
+
+## Slide 10b — Demo: Dashboard en Vivo — Cohetes & Meteorología
+
+**Lo que ves:** Captura con las especificaciones técnicas de cohetes SpaceX y el análisis de correlación climática.
+
+**Lo que dices:**
+- *"La pestaña de cohetes muestra las specs técnicas de cada vehículo SpaceX: altura, masa, empuje, número de motores. Datos que vienen directamente de la API oficial de SpaceX."*
+- *"La parte meteorológica es quizás la más original: hemos cruzado cada lanzamiento con los datos climáticos del día en ese pad concreto."*
+- *"El gráfico de temperatura muestra que los lanzamientos con mayor tasa de éxito se concentran entre 10 y 28 grados. Por encima o por debajo, la tasa cae."*
+- *"El gráfico de viento es incluso más claro: a partir de 60 km/h, ninguna agencia supera el 85% de éxito. Es un dato operacional real, no una suposición."*
+- *"Este análisis meteorológico es la base de datos del simulador que veremos a continuación."*
 
 ---
 
@@ -140,6 +177,20 @@
 
 ---
 
+## Slide 11b — Demo: Simulador de Lanzamiento — Vista Real
+
+**Lo que ves:** Captura del simulador con los sliders de cohete, temperatura y viento, y la barra de probabilidad de éxito.
+
+**Lo que dices:**
+- *"Esto es el simulador funcionando en vivo."*
+- *"Fijaos en la interfaz: selector de cohete SpaceX en la parte superior, luego dos sliders —temperatura en grados centígrados y viento en km/h."*
+- *"En el ejemplo que veis, Falcon 9, 18 grados, viento de 25 km/h: el sistema devuelve 94% de probabilidad de éxito."*
+- *"Las tres barras de factores muestran cómo cada variable contribuye al resultado: factor cohete, factor temperatura, factor viento. Completamente transparente, no es una caja negra."*
+- *"Si cambio a Falcon Heavy y añado viento de 80 km/h, la probabilidad cae en tiempo real. El feedback es inmediato."*
+- *(Si tienes el dashboard abierto, muéstralo aquí en vivo — 20 segundos de demo son más impactantes que cualquier slide.)*
+
+---
+
 ## Slide 12 — Asistente IA
 
 **Lo que ves:** Bubbles de chat con el asistente respondiendo.
@@ -153,6 +204,19 @@
 
 ---
 
+## Slide 12b — Demo: Asistente IA — Vista Real
+
+**Lo que ves:** Captura del chat con burbujas de conversación: pregunta del usuario y respuesta del asistente IA sobre datos espaciales.
+
+**Lo que dices:**
+- *"Y aquí el asistente en acción."*
+- *"Fijaos en la respuesta: no es una respuesta genérica de un LLM. Habla de SpaceX, de tasas de éxito concretas, de cohetes específicos. Porque el contexto del dashboard está inyectado en el prompt."*
+- *"La respuesta llega token a token, en streaming, igual que ChatGPT. La experiencia de usuario es idéntica a los productos comerciales."*
+- *"La pregunta del ejemplo es: '¿Qué cohete tiene mayor tasa de éxito?' —y el asistente responde con datos reales de nuestra tabla gold, no con datos de entrenamiento genéricos."*
+- *(Si tienes el dashboard abierto: haz una pregunta en vivo al asistente. Una pregunta sencilla sobre datos — "¿Cuántos lanzamientos hay de SpaceX?" o "¿Qué agencia tiene más lanzamientos?" — y muestra el streaming en directo. Es el momento más impactante de la demo.)*
+
+---
+
 ## Slide 13 — Costes
 
 **Lo que ves:** Dos tablas: infraestructura actual ($0) y estimación a escala.
@@ -162,6 +226,19 @@
 - *"Streamlit Cloud gratuito para el dashboard, Groq gratuito para la IA, tres APIs de datos completamente abiertas, Docker Community Edition, Apache Spark en local."*
 - *"Esto demuestra que con una buena arquitectura y elección de herramientas, se puede construir una plataforma de análisis de nivel profesional sin inversión inicial."*
 - *"En la tabla de la derecha os muestro una estimación realista si escalásemos la plataforma a producción con 10.000 usuarios activos: unos 270 dólares al mes, principalmente por el cluster de Spark en cloud y el servidor del dashboard. Muy competitivo para el valor que ofrece."*
+
+---
+
+## Slide 13b — Demo: Análisis de Costos — Vista Real
+
+**Lo que ves:** Captura de la pestaña de costos con gráficos de barras por proveedor y categoría de misión, y una tabla de datos detallada.
+
+**Lo que dices:**
+- *"La última pestaña de demo es el análisis de costos."*
+- *"Aquí cruzamos los lanzamientos con una tabla de referencia de costos por cohete, basada en datos reales publicados por la industria y agencias espaciales."*
+- *"El gráfico de barras por proveedor muestra algo muy claro: SpaceX es entre 3 y 10 veces más barato por kilogramo a órbita que sus competidores. Es el dato que explica por qué han dominado el mercado."*
+- *"La segmentación por tipo de misión también es reveladora: las misiones comerciales tienen el mayor volumen de gasto total, pero las gubernamentales tienen el mayor coste por lanzamiento individual."*
+- *"Son datos sintéticos generados a partir de referencias reales —lo indicamos claramente en el dashboard— pero capturan fielmente las proporciones y tendencias del sector."*
 
 ---
 
