@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Space Launches Intelligence Platform · TFG 2025</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060d1a;
+  --card: #0d1b2a;
+  --card2: #132030;
+  --border: #1e3a5f;
+  --accent: #00b4d8;
+  --cyan: #48cae4;
+  --success: #4ade80;
+  --warning: #fb923c;
+  --gold: #facc15;
+  --silver: #94a3b8;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+
+/* ── Base ── */
+.reveal-viewport, .reveal, .slide-background { background: var(--bg) !important; }
+.reveal { font-family: 'Inter', sans-serif; color: var(--text); font-size: 28px; }
+.reveal section { height: 100%; }
+
+/* ── Stars ── */
+.stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 8%  12%, rgba(255,255,255,.55) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 22% 68%, rgba(144,224,239,.4)  0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 38%  5%, rgba(255,255,255,.4)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 54% 42%, rgba(255,255,255,.35) 0%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 67% 78%, rgba(0,180,216,.45)   0%, transparent 100%),
+    radial-gradient(1px   1px   at 80% 25%, rgba(255,255,255,.4)   0%, transparent 100%),
+    radial-gradient(1px   1px   at 92% 60%, rgba(144,224,239,.35)  0%, transparent 100%),
+    radial-gradient(2px   2px   at 15% 92%, rgba(0,180,216,.3)     0%, transparent 100%),
+    radial-gradient(1px   1px   at 45% 85%, rgba(255,255,255,.3)   0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 72%  3%, rgba(255,255,255,.45)  0%, transparent 100%),
+    radial-gradient(1px   1px   at 3%  50%, rgba(144,224,239,.3)   0%, transparent 100%),
+    radial-gradient(1px   1px   at 88% 88%, rgba(255,255,255,.35)  0%, transparent 100%);
+  animation: starDrift 240s linear infinite;
+}
+@keyframes starDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 200px 200px; }
+}
+
+/* ── Typography ── */
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: .06em;
+  text-shadow: none; margin: 0 0 .5em;
+}
+.reveal h1 { font-size: 2.4em; color: #fff; font-weight: 900; }
+.reveal h2 { font-size: 1.5em; color: var(--accent); font-weight: 700; }
+.reveal h3 { font-size: .95em; color: var(--cyan); font-weight: 700; letter-spacing: .12em; }
+.reveal p  { margin: .4em 0; }
+.reveal ul { list-style: none; padding: 0; margin: 0; }
+.reveal ul li { padding: .15em 0; }
+.reveal ul li::before { content: '▸ '; color: var(--accent); }
+
+/* ── Glow ── */
+.glow        { text-shadow: 0 0 30px rgba(0,180,216,.7), 0 0 60px rgba(0,180,216,.35) !important; }
+.glow-gold   { text-shadow: 0 0 25px rgba(250,204,21,.6) !important; }
+.glow-green  { text-shadow: 0 0 25px rgba(74,222,128,.6) !important; }
+.glow-orange { text-shadow: 0 0 25px rgba(251,146,60,.6) !important; }
+
+/* ── Divider line ── */
+.line {
+  height: 2px; width: 80px; margin: .5em auto;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.line-full {
+  height: 1px; width: 100%; margin: .8em 0;
+  background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.1rem 1.3rem; position: relative; overflow: hidden;
+}
+.card-top { position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+.card-top.gold   { background: linear-gradient(90deg, transparent, var(--gold),    transparent); }
+.card-top.silver { background: linear-gradient(90deg, transparent, var(--silver),  transparent); }
+.card-top.orange { background: linear-gradient(90deg, transparent, var(--warning), transparent); }
+.card-top.green  { background: linear-gradient(90deg, transparent, var(--success), transparent); }
+
+/* ── Grid layouts ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr;       gap: .9rem; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr;   gap: .9rem; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: .7rem; }
+
+/* ── Big stat ── */
+.stat { font-family: 'Orbitron', sans-serif; font-weight: 900; line-height: 1; }
+.stat-xl  { font-size: 3.2em; color: var(--accent); }
+.stat-lg  { font-size: 2.2em; color: var(--accent); }
+.stat-lbl { font-size: .55em; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-top: .3em; }
+.stat-sub { font-size: .6em;  color: var(--text); font-family: 'Inter', sans-serif; font-weight: 400; margin-top: .2em; }
+
+/* ── Pipeline ── */
+.pipeline { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; justify-content: center; }
+.pnode {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+  padding: .5rem .85rem; font-size: .6em; text-align: center; min-width: 85px;
+}
+.pnode .plabel { font-family: 'Orbitron', sans-serif; font-size: 1.05em; color: var(--accent); }
+.pnode .psub   { color: var(--muted); font-size: .85em; margin-top: .15em; }
+.parrow { color: var(--accent); font-size: 1.2em; }
+
+/* ── Tab grid ── */
+.tabgrid { display: grid; grid-template-columns: repeat(5,1fr); gap: .55rem; }
+.tabitem {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 8px;
+  padding: .7rem .4rem; text-align: center; transition: border-color .3s;
+}
+.tabitem:hover { border-color: var(--accent); }
+.tabicon { font-size: 1.7em; display: block; margin-bottom: .25rem; }
+.tabhdr  { font-size: .52em; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+
+/* ── Tech badges ── */
+.techgrid { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: .5rem; }
+.badge {
+  border-radius: 20px; padding: .35rem .95rem; font-size: .58em; font-weight: 600;
+  letter-spacing: .05em; border: 1px solid;
+}
+.badge-blue   { border-color: var(--accent);   color: var(--accent);   background: rgba(0,180,216,.08);   }
+.badge-green  { border-color: var(--success);  color: var(--success);  background: rgba(74,222,128,.08);  }
+.badge-orange { border-color: var(--warning);  color: var(--warning);  background: rgba(251,146,60,.08);  }
+.badge-silver { border-color: var(--silver);   color: var(--silver);   background: rgba(148,163,184,.08); }
+.badge-gold   { border-color: var(--gold);     color: var(--gold);     background: rgba(250,204,21,.08);  }
+
+/* ── Cost table ── */
+.ctable { width: 100%; border-collapse: collapse; font-size: .62em; }
+.ctable th {
+  font-family: 'Orbitron', sans-serif; font-size: .78em; color: var(--accent);
+  padding: .45rem .6rem; border-bottom: 1px solid var(--border); text-align: left;
+}
+.ctable td { padding: .4rem .6rem; border-bottom: 1px solid rgba(30,58,95,.5); color: var(--text); }
+.ctable .free    { color: var(--success); font-weight: 700; }
+.ctable .scale   { color: var(--warning); }
+.ctable .total   { font-family: 'Orbitron', sans-serif; color: var(--accent); font-size: 1.1em; }
+.ctable tr:last-child td { border-bottom: none; }
+
+/* ── Chat bubbles ── */
+.chatbox { display: flex; flex-direction: column; gap: .5rem; }
+.bubble {
+  max-width: 75%; padding: .65rem 1rem; border-radius: 12px; font-size: .6em;
+  line-height: 1.5; border: 1px solid;
+}
+.bubble.user { align-self: flex-end; border-color: var(--accent); color: var(--accent);
+  background: rgba(0,180,216,.08); border-radius: 12px 12px 0 12px; }
+.bubble.ai   { align-self: flex-start; border-color: var(--success); color: var(--text);
+  background: rgba(74,222,128,.06); border-radius: 12px 12px 12px 0; }
+.bubble-lbl  { font-size: .5em; color: var(--muted); margin-bottom: .15em; }
+
+/* ── Arch layers ── */
+.arch { display: flex; align-items: stretch; gap: 0; }
+.arch-layer {
+  flex: 1; border: 1px solid var(--border); border-radius: 0;
+  padding: .9rem .7rem; position: relative;
+}
+.arch-layer:first-child { border-radius: 12px 0 0 12px; }
+.arch-layer:last-child  { border-radius: 0 12px 12px 0; }
+.arch-arrow {
+  display: flex; align-items: center; padding: 0 .3rem;
+  color: var(--accent); font-size: 1.4em;
+}
+.arch-lbl { font-family: 'Orbitron', sans-serif; font-size: .7em; font-weight: 700; margin-bottom: .4em; }
+.arch-sub { font-size: .52em; color: var(--muted); }
+.arch-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .5rem; }
+.arch-tag { font-size: .48em; padding: .2rem .5rem; border-radius: 4px; }
+
+/* ── Progress bar ── */
+.pbar-wrap { margin: .3rem 0; }
+.pbar-lbl  { display: flex; justify-content: space-between; font-size: .52em; color: var(--muted); margin-bottom: .2rem; }
+.pbar      { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.pbar-fill { height: 100%; border-radius: 3px; }
+
+/* ── Slide numbering ── */
+.reveal .slide-number { background: transparent; color: var(--muted); font-size: .45em; }
+
+/* ── Controls ── */
+.reveal .controls { color: var(--accent); }
+
+/* ── Section label (top) ── */
+.sec-label {
+  font-family: 'Orbitron', sans-serif; font-size: .42em; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .18em; margin-bottom: .6em;
+}
+
+/* ── Icon big ── */
+.icon-xl { font-size: 2.6em; display: block; }
+.icon-lg  { font-size: 2em;  display: block; }
+
+/* ── Highlight box ── */
+.hbox {
+  background: rgba(0,180,216,.07); border: 1px solid rgba(0,180,216,.3);
+  border-radius: 8px; padding: .6rem 1rem; font-size: .7em;
+  color: var(--text); text-align: center;
+}
+
+/* ── Result row ── */
+.rrow { display: flex; gap: .7rem; justify-content: center; flex-wrap: wrap; }
+.rcard {
+  background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
+  padding: .9rem 1.3rem; text-align: center; min-width: 120px; flex: 1;
+}
+
+/* ── Conclusion ── */
+.next-item {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .62em; padding: .4rem 0; border-bottom: 1px solid rgba(30,58,95,.5);
+}
+.next-item:last-child { border-bottom: none; }
+.next-num {
+  font-family: 'Orbitron', sans-serif; font-size: 1.3em; color: var(--accent);
+  font-weight: 700; min-width: 1.4em;
+}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="reveal">
+<div class="slides">
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 1 — PORTADA
+════════════════════════════════════════ -->
+<section data-transition="fade">
+  <div style="text-align:center; padding: 1.5rem 0;">
+    <div style="font-size:3.5em; margin-bottom:.4em;">🚀</div>
+    <h1 class="glow" style="font-size:2em; line-height:1.15;">Space Launches<br>Intelligence Platform</h1>
+    <div class="line"></div>
+    <p style="color:var(--muted); font-size:.7em; letter-spacing:.12em; text-transform:uppercase; margin:.8em 0;">
+      Del dato crudo al insight espacial — en tiempo real
+    </p>
+    <div style="margin-top:2rem; display:flex; justify-content:center; gap:1.5rem; font-size:.6em; color:var(--muted);">
+      <span>👤 Juan Manuel Vega</span>
+      <span style="color:var(--border);">|</span>
+      <span>🎓 Trabajo de Fin de Grado · 2025</span>
+      <span style="color:var(--border);">|</span>
+      <span>🏫 IES Rafael Alberti</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 2 — EL PROBLEMA
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">El Contexto</div>
+  <h2>¿Cuál era el problema?</h2>
+  <div class="line"></div>
+  <br>
+  <div class="g3" style="margin-top:.5rem;">
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top orange"></div>
+      <span class="icon-xl" style="margin:.3em 0;">🗃️</span>
+      <h3 style="color:var(--warning); margin:.3em 0;">Datos Fragmentados</h3>
+      <p style="font-size:.58em; color:var(--muted); margin-top:.4em;">
+        Miles de lanzamientos en <strong style="color:var(--text);">3 APIs distintas</strong>, sin unificación posible
+      </p>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top"></div>
+      <span class="icon-xl" style="margin:.3em 0;">📊</span>
+      <h3 style="margin:.3em 0;">Sin Análisis Histórico</h3>
+      <p style="font-size:.58em; color:var(--muted); margin-top:.4em;">
+        Imposible extraer <strong style="color:var(--text);">patrones y tendencias</strong> sin una plataforma unificada
+      </p>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top green"></div>
+      <span class="icon-xl" style="margin:.3em 0;">🤖</span>
+      <h3 style="color:var(--success); margin:.3em 0;">Sin Inteligencia</h3>
+      <p style="font-size:.58em; color:var(--muted); margin-top:.4em;">
+        Sin <strong style="color:var(--text);">predicción de éxito</strong> ni asistente IA para consultas espaciales
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 3 — LA SOLUCIÓN / PITCH
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">La Propuesta</div>
+  <h2>Una plataforma end-to-end</h2>
+  <div class="line"></div>
+
+  <div class="hbox" style="margin: .8rem 0 1.2rem; font-size:.72em;">
+    Integra, procesa y analiza datos de lanzamientos espaciales globales<br>con <strong style="color:var(--accent);">Big Data, visualización interactiva e Inteligencia Artificial</strong>
+  </div>
+
+  <div class="g4">
+    <div class="card" style="text-align:center;">
+      <div class="card-top"></div>
+      <div class="stat stat-lg glow" style="margin:.3em 0;">1.500+</div>
+      <div class="stat-lbl">Lanzamientos</div>
+      <div class="stat-sub">analizados</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top orange"></div>
+      <div class="stat stat-lg glow-orange" style="margin:.3em 0; color:var(--warning);">3</div>
+      <div class="stat-lbl">Fuentes de datos</div>
+      <div class="stat-sub">integradas</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top green"></div>
+      <div class="stat stat-lg glow-green" style="margin:.3em 0; color:var(--success);">10</div>
+      <div class="stat-lbl">Análisis</div>
+      <div class="stat-sub">interactivos</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top gold"></div>
+      <div class="stat stat-lg glow-gold" style="margin:.3em 0; color:var(--gold);">1</div>
+      <div class="stat-lbl">Asistente IA</div>
+      <div class="stat-sub">LLaMA 3.3 70B</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 4 — ARQUITECTURA MEDALLIÓN
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Arquitectura</div>
+  <h2>Arquitectura Medallión</h2>
+  <div class="line"></div>
+  <br>
+
+  <div style="display:flex; align-items:center; gap:.4rem;">
+
+    <div class="card" style="flex:1; border-color:#fb923c;">
+      <div class="card-top orange"></div>
+      <div class="arch-lbl" style="color:var(--warning);">🥉 RAW</div>
+      <div class="arch-sub">Datos en bruto tal como llegan de las APIs</div>
+      <div class="arch-tags">
+        <span class="arch-tag badge badge-orange">JSONL</span>
+        <span class="arch-tag badge badge-orange">JSON</span>
+      </div>
+      <div style="margin-top:.7rem; font-size:.52em; color:var(--muted);">
+        launch_library_launches.jsonl<br>
+        spacex_rockets.json<br>
+        open_meteo_samples.jsonl<br>
+        spacex_launches_images.jsonl
+      </div>
+    </div>
+
+    <div class="parrow">→</div>
+
+    <div class="card" style="flex:1; border-color:var(--silver);">
+      <div class="card-top silver"></div>
+      <div class="arch-lbl" style="color:var(--silver);">🥈 SILVER</div>
+      <div class="arch-sub">Datos limpios, tipados y normalizados</div>
+      <div class="arch-tags">
+        <span class="arch-tag badge badge-silver">Parquet</span>
+        <span class="arch-tag badge badge-silver">Spark</span>
+      </div>
+      <div style="margin-top:.7rem; font-size:.52em; color:var(--muted);">
+        launches/ (por año)<br>
+        weather/<br>
+        spacex_rockets/<br>
+        images/<br>
+        launch_costs/
+      </div>
+    </div>
+
+    <div class="parrow">→</div>
+
+    <div class="card" style="flex:1; border-color:var(--gold);">
+      <div class="card-top gold"></div>
+      <div class="arch-lbl" style="color:var(--gold);">🥇 GOLD</div>
+      <div class="arch-sub">Datos agregados y listos para análisis</div>
+      <div class="arch-tags">
+        <span class="arch-tag badge badge-gold">Parquet</span>
+        <span class="arch-tag badge badge-gold">BI-Ready</span>
+      </div>
+      <div style="margin-top:.7rem; font-size:.52em; color:var(--muted);">
+        company_year_metrics/<br>
+        launch_features/<br>
+        <br>
+        → Streamlit Dashboard
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 5 — FUENTES DE DATOS
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Ingesta</div>
+  <h2>Fuentes de Datos</h2>
+  <div class="line"></div>
+  <br>
+
+  <div class="g3">
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top"></div>
+      <span class="icon-xl">🛸</span>
+      <h3 style="margin:.4em 0;">Launch Library 2</h3>
+      <div class="line-full"></div>
+      <ul style="font-size:.55em; text-align:left; margin-top:.5em;">
+        <li>+5.000 lanzamientos históricos</li>
+        <li>Estado, agencia, cohete, pad</li>
+        <li>Coordenadas del sitio de lanzamiento</li>
+        <li>Imágenes e infografías</li>
+      </ul>
+      <div style="margin-top:.8em;">
+        <span class="badge badge-green" style="font-size:.5em;">REST API · Gratuita</span>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top orange"></div>
+      <span class="icon-xl">🚀</span>
+      <h3 style="color:var(--warning); margin:.4em 0;">SpaceX API v5</h3>
+      <div class="line-full"></div>
+      <ul style="font-size:.55em; text-align:left; margin-top:.5em;">
+        <li>Todos los lanzamientos SpaceX</li>
+        <li>Especificaciones técnicas de cohetes</li>
+        <li>Datos de éxito/fallo detallados</li>
+        <li>Imágenes Flickr oficiales</li>
+      </ul>
+      <div style="margin-top:.8em;">
+        <span class="badge badge-orange" style="font-size:.5em;">REST API · Open Source</span>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div class="card-top blue"></div>
+      <span class="icon-xl">🌤️</span>
+      <h3 style="margin:.4em 0;">Open-Meteo</h3>
+      <div class="line-full"></div>
+      <ul style="font-size:.55em; text-align:left; margin-top:.5em;">
+        <li>Historial climático por coordenadas</li>
+        <li>Temperatura media del día de lanzamiento</li>
+        <li>Velocidad máxima del viento</li>
+        <li>Resolución diaria desde 1940</li>
+      </ul>
+      <div style="margin-top:.8em;">
+        <span class="badge badge-blue" style="font-size:.5em;">REST API · Gratuita &amp; Open</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 6 — PIPELINE DE INGESTA
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Ingesta</div>
+  <h2>Pipeline de Ingesta</h2>
+  <div class="line"></div>
+  <br>
+
+  <div class="pipeline" style="font-size:.9em;">
+    <div class="pnode">
+      <div class="plabel">APIs</div>
+      <div class="psub">Launch Library<br>SpaceX · Open-Meteo</div>
+    </div>
+    <span class="parrow">→</span>
+    <div class="pnode">
+      <div class="plabel" style="color:var(--warning);">Python Fetcher</div>
+      <div class="psub">requests · httpx<br>Paginación automática</div>
+    </div>
+    <span class="parrow">→</span>
+    <div class="pnode">
+      <div class="plabel" style="color:var(--silver);">RAW Storage</div>
+      <div class="psub">JSONL · JSON<br>Run ID = timestamp</div>
+    </div>
+    <span class="parrow">→</span>
+    <div class="pnode">
+      <div class="plabel" style="color:var(--gold);">⚡ Apache Spark</div>
+      <div class="psub">ETL Silver → Gold<br>PySpark</div>
+    </div>
+    <span class="parrow">→</span>
+    <div class="pnode">
+      <div class="plabel" style="color:var(--success);">Dashboard</div>
+      <div class="psub">Streamlit<br>Plotly · Pandas</div>
+    </div>
+  </div>
+
+  <br>
+  <div class="g2" style="margin-top:.5rem; font-size:.85em;">
+    <div class="card">
+      <div class="card-top orange"></div>
+      <h3 style="font-size:.8em; margin-bottom:.5em;">🐳 Orquestación Docker</h3>
+      <ul style="font-size:.55em;">
+        <li><strong style="color:var(--accent);">docker compose up</strong> arranca todo el stack</li>
+        <li>Volúmenes compartidos entre servicios</li>
+        <li>Aislamiento completo del entorno</li>
+        <li>Un único comando para ingestar + procesar</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-top green"></div>
+      <h3 style="font-size:.8em; margin-bottom:.5em;">📁 Organización de Datos</h3>
+      <ul style="font-size:.55em;">
+        <li>Cada ejecución crea un <strong style="color:var(--accent);">run_id</strong> único</li>
+        <li>Trazabilidad total de la ingesta</li>
+        <li>Particionado por año en Silver y Gold</li>
+        <li>Formato Parquet para máxima eficiencia</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 7 — APACHE SPARK
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Procesamiento</div>
+  <h2>Procesamiento con Apache Spark</h2>
+  <div class="line"></div>
+
+  <div class="g2" style="margin-top:.8rem; align-items:start;">
+
+    <div>
+      <div class="card" style="margin-bottom:.7rem;">
+        <div class="card-top silver"></div>
+        <h3 style="font-size:.75em; margin-bottom:.6em;">📥 Entradas (RAW)</h3>
+        <div class="pipeline" style="flex-direction:column; align-items:flex-start; gap:.3rem;">
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
+            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">launch_library_launches.jsonl</span>
+          </div>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
+            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">spacex_rockets.json</span>
+          </div>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
+            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">open_meteo_samples.jsonl</span>
+          </div>
+          <div class="pnode" style="min-width:unset; text-align:left; width:100%;">
+            <span style="font-size:.52em; font-family:monospace; color:var(--warning);">spacex_launches_images.jsonl</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:.7rem;">
+        <div class="card-top"></div>
+        <h3 style="font-size:.75em; margin-bottom:.6em;">⚡ Transformaciones PySpark</h3>
+        <ul style="font-size:.54em;">
+          <li>Selección y renombrado de columnas</li>
+          <li>Casting de tipos (timestamp, double, int)</li>
+          <li>Joins entre datasets (launches ⟕ weather)</li>
+          <li>Agregaciones por agencia y año</li>
+          <li>Generación de costes sintéticos (lookup join)</li>
+          <li>Particionado por <strong style="color:var(--accent);">launch_year</strong></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-top gold"></div>
+        <h3 style="font-size:.75em; margin-bottom:.6em;">📤 Salidas (Silver + Gold)</h3>
+        <div style="font-size:.52em; color:var(--muted);">
+          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">launches/</span>
+          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">weather/</span>
+          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">spacex_rockets/</span>
+          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">images/</span>
+          <span class="badge badge-silver" style="font-size:.9em; margin:.1em;">launch_costs/</span>
+          <span class="badge badge-gold"   style="font-size:.9em; margin:.1em;">company_year_metrics/</span>
+          <span class="badge badge-gold"   style="font-size:.9em; margin:.1em;">launch_features/</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 8 — CAPA GOLD
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Datos</div>
+  <h2>Capa Gold — Analytics Ready</h2>
+  <div class="line"></div>
+  <br>
+
+  <div class="g2">
+
+    <div class="card">
+      <div class="card-top gold"></div>
+      <h3 style="color:var(--gold); font-size:.8em;">🏆 company_year_metrics</h3>
+      <p style="font-size:.52em; color:var(--muted); margin:.3em 0 .7em;">KPIs por agencia y año — alimenta el ranking de proveedores</p>
+      <div style="display:flex; flex-wrap:wrap; gap:.3rem;">
+        <span class="badge badge-gold" style="font-size:.48em;">launch_year</span>
+        <span class="badge badge-gold" style="font-size:.48em;">provider_name</span>
+        <span class="badge badge-gold" style="font-size:.48em;">total_launches</span>
+        <span class="badge badge-gold" style="font-size:.48em;">successful_launches</span>
+        <span class="badge badge-gold" style="font-size:.48em;">success_rate_pct</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top gold"></div>
+      <h3 style="color:var(--gold); font-size:.8em;">🚀 launch_features</h3>
+      <p style="font-size:.52em; color:var(--muted); margin:.3em 0 .7em;">Feature table enriquecida — base para ML y análisis meteorológico</p>
+      <div style="display:flex; flex-wrap:wrap; gap:.3rem;">
+        <span class="badge badge-gold" style="font-size:.48em;">launch_id</span>
+        <span class="badge badge-gold" style="font-size:.48em;">launch_date</span>
+        <span class="badge badge-gold" style="font-size:.48em;">provider_name</span>
+        <span class="badge badge-gold" style="font-size:.48em;">rocket_name</span>
+        <span class="badge badge-gold" style="font-size:.48em;">mission_orbit</span>
+        <span class="badge badge-gold" style="font-size:.48em;">pad_lat/lon</span>
+        <span class="badge badge-gold" style="font-size:.48em;">is_success</span>
+        <span class="badge badge-gold" style="font-size:.48em;">temperature_2m_mean</span>
+        <span class="badge badge-gold" style="font-size:.48em;">wind_speed_10m_max</span>
+        <span class="badge badge-gold" style="font-size:.48em;">launch_image_count</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:.7rem; border-color:rgba(0,180,216,.3);">
+    <div class="card-top"></div>
+    <div style="display:flex; justify-content:space-around; text-align:center; font-size:.58em;">
+      <div><div class="stat" style="font-size:1.6em; color:var(--accent);">50+</div><div style="color:var(--muted);">Agencias</div></div>
+      <div style="border-left:1px solid var(--border); padding-left:1rem;">
+        <div class="stat" style="font-size:1.6em; color:var(--gold);">15</div><div style="color:var(--muted);">Años de datos</div>
+      </div>
+      <div style="border-left:1px solid var(--border); padding-left:1rem;">
+        <div class="stat" style="font-size:1.6em; color:var(--success);">1.500+</div><div style="color:var(--muted);">Registros de costes</div>
+      </div>
+      <div style="border-left:1px solid var(--border); padding-left:1rem;">
+        <div class="stat" style="font-size:1.6em; color:var(--warning);">7</div><div style="color:var(--muted);">Tablas Silver</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 9 — DASHBOARD 10 VISTAS
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Dashboard</div>
+  <h2>10 Análisis Interactivos</h2>
+  <div class="line"></div>
+  <br>
+
+  <div class="tabgrid">
+    <div class="tabitem"><span class="tabicon">📈</span><div class="tabhdr">Histórico</div></div>
+    <div class="tabitem"><span class="tabicon">🏢</span><div class="tabhdr">Proveedores</div></div>
+    <div class="tabitem"><span class="tabicon">🛸</span><div class="tabhdr">Misiones & Órbitas</div></div>
+    <div class="tabitem"><span class="tabicon">🌍</span><div class="tabhdr">Geografía</div></div>
+    <div class="tabitem"><span class="tabicon">🚀</span><div class="tabhdr">SpaceX Rockets</div></div>
+    <div class="tabitem"><span class="tabicon">🌤️</span><div class="tabhdr">Meteorología</div></div>
+    <div class="tabitem"><span class="tabicon">🖼️</span><div class="tabhdr">Galería</div></div>
+    <div class="tabitem"><span class="tabicon">🎮</span><div class="tabhdr">Simulador</div></div>
+    <div class="tabitem" style="border-color:rgba(250,204,21,.4);"><span class="tabicon">💰</span><div class="tabhdr">Costos</div></div>
+    <div class="tabitem" style="border-color:rgba(74,222,128,.4);"><span class="tabicon">🤖</span><div class="tabhdr">Asistente IA</div></div>
+  </div>
+
+  <div class="hbox" style="margin-top:1rem; font-size:.6em;">
+    Filtros globales: rango de años · agencias · tipos de órbita &nbsp;|&nbsp;
+    Datos en tiempo real desde el pipeline Spark &nbsp;|&nbsp;
+    Desplegado en <strong style="color:var(--accent);">Streamlit Cloud</strong>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 10 — ANÁLISIS & INSIGHTS
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Dashboard</div>
+  <h2>Análisis Histórico & Proveedores</h2>
+  <div class="line"></div>
+
+  <div class="g2" style="margin-top:.8rem;">
+
+    <div class="card">
+      <div class="card-top"></div>
+      <h3 style="font-size:.75em; margin-bottom:.6em;">📈 Evolución Histórica</h3>
+      <ul style="font-size:.55em;">
+        <li>Lanzamientos anuales desde <strong style="color:var(--accent);">2010 hasta 2025</strong></li>
+        <li>Race chart animado: Top 15 agencias</li>
+        <li>Comparativa éxitos vs fallos por año</li>
+        <li>Tendencia de la tasa de éxito global</li>
+      </ul>
+      <div class="line-full" style="margin:.6em 0;"></div>
+      <div style="font-size:.52em; color:var(--muted);">
+        Insight: <strong style="color:var(--success);">SpaceX multiplica ×10</strong> sus lanzamientos de 2015 a 2023
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-top orange"></div>
+      <h3 style="font-size:.75em; margin-bottom:.6em;">🏢 Ranking de Proveedores</h3>
+      <ul style="font-size:.55em;">
+        <li>Heatmap de éxito por agencia y año</li>
+        <li>Gráfico de burbujas: volumen vs tasa de éxito</li>
+        <li>Top agencias por número de lanzamientos</li>
+        <li>Comparativa pública vs privada</li>
+      </ul>
+      <div class="line-full" style="margin:.6em 0;"></div>
+      <div style="font-size:.52em; color:var(--muted);">
+        Insight: Las agencias privadas superan en tasa de éxito a las gubernamentales desde 2018
+      </div>
+    </div>
+
+  </div>
+
+  <div class="g2" style="margin-top:.7rem;">
+    <div class="card">
+      <div class="card-top green"></div>
+      <h3 style="font-size:.75em; margin-bottom:.5em;">🛸 Misiones & Órbitas</h3>
+      <p style="font-size:.55em; color:var(--muted);">
+        Distribución por tipo (Comunicaciones, Científica, ISS…) y por órbita (LEO, GEO, SSO, MEO…)
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-top"></div>
+      <h3 style="font-size:.75em; margin-bottom:.5em;">🌍 Mapa Global</h3>
+      <p style="font-size:.55em; color:var(--muted);">
+        Mapa Scattergeo con todos los pads de lanzamiento. Color = tasa de éxito. Tamaño = volumen.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 11 — SIMULADOR IA
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Inteligencia</div>
+  <h2>Simulador de Lanzamiento</h2>
+  <div class="line"></div>
+
+  <div class="g2" style="margin-top:.8rem; align-items:start;">
+
+    <div>
+      <div class="card">
+        <div class="card-top green"></div>
+        <h3 style="font-size:.75em; margin-bottom:.6em;">🎮 ¿Cómo funciona?</h3>
+        <ul style="font-size:.55em;">
+          <li>Selecciona el <strong style="color:var(--accent);">cohete</strong> (9 vehículos SpaceX)</li>
+          <li>Introduce <strong style="color:var(--accent);">temperatura</strong> y <strong style="color:var(--accent);">viento</strong> previstos</li>
+          <li>El modelo calcula la <strong style="color:var(--success);">probabilidad de éxito</strong></li>
+          <li>Desglose por factores: cohete, clima, viento</li>
+        </ul>
+        <div class="line-full" style="margin:.6em 0;"></div>
+        <p style="font-size:.5em; color:var(--muted);">
+          Basado en tasas históricas reales y correlación con condiciones meteorológicas del día de lanzamiento
+        </p>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="text-align:center;">
+        <div class="card-top"></div>
+        <h3 style="font-size:.7em; margin-bottom:.8em;">Ejemplo: Falcon 9 · 18°C · 25 km/h</h3>
+        <div style="font-size:2.8em; color:var(--success); font-family:'Orbitron',sans-serif; font-weight:900;" class="glow-green">
+          94.2%
+        </div>
+        <div style="font-size:.52em; color:var(--muted); margin:.4em 0 1em;">Probabilidad de éxito estimada</div>
+        <div class="pbar-wrap">
+          <div class="pbar-lbl"><span>🚀 Cohete (Falcon 9)</span><span style="color:var(--accent);">95%</span></div>
+          <div class="pbar"><div class="pbar-fill" style="width:95%; background:var(--accent);"></div></div>
+        </div>
+        <div class="pbar-wrap">
+          <div class="pbar-lbl"><span>🌡️ Temperatura (18°C)</span><span style="color:var(--success);">100%</span></div>
+          <div class="pbar"><div class="pbar-fill" style="width:100%; background:var(--success);"></div></div>
+        </div>
+        <div class="pbar-wrap">
+          <div class="pbar-lbl"><span>💨 Viento (25 km/h)</span><span style="color:var(--success);">100%</span></div>
+          <div class="pbar"><div class="pbar-fill" style="width:100%; background:var(--success);"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 12 — ASISTENTE IA
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Inteligencia Artificial</div>
+  <h2>Asistente IA Integrado</h2>
+  <div class="line"></div>
+
+  <div class="g2" style="margin-top:.8rem; align-items:start;">
+
+    <div class="card">
+      <div class="card-top green"></div>
+      <h3 style="font-size:.75em; margin-bottom:.6em;">⚡ Stack de IA</h3>
+      <div style="text-align:center; margin:.5em 0;">
+        <span class="badge badge-green" style="font-size:.6em; margin:.2em;">LLaMA 3.3 70B</span>
+        <span class="badge badge-blue"  style="font-size:.6em; margin:.2em;">Groq API</span>
+        <span class="badge badge-orange" style="font-size:.6em; margin:.2em;">Streaming SSE</span>
+      </div>
+      <ul style="font-size:.54em; margin-top:.6em;">
+        <li>Contexto completo del dashboard inyectado al modelo</li>
+        <li>Respuestas token a token en tiempo real</li>
+        <li>Historial multi-turno en sesión</li>
+        <li>Key segura en Streamlit Secrets</li>
+      </ul>
+      <div class="line-full" style="margin:.6em 0;"></div>
+      <p style="font-size:.5em; color:var(--muted);">
+        Puede responder sobre datos del dashboard Y sobre física orbital, historia espacial, ingeniería aeroespacial, etc.
+      </p>
+    </div>
+
+    <div>
+      <div class="chatbox">
+        <div style="font-size:.48em; color:var(--muted); text-align:right; margin-bottom:.2em;">Tú</div>
+        <div class="bubble user">
+          ¿Qué proveedor tiene la mayor tasa de éxito en los últimos 5 años?
+        </div>
+        <div style="font-size:.48em; color:var(--muted); margin:.1em 0 .2em;">🤖 Asistente IA</div>
+        <div class="bubble ai">
+          Según los datos del dashboard, <strong>SpaceX</strong> lidera con una tasa de éxito superior al 95% desde 2019, seguida de <strong>Rocket Lab</strong> (Electron) con ~90%. Las agencias gubernamentales como NASA y ESA operan mayoritariamente como cliente, no como operador directo.
+        </div>
+        <div class="bubble user" style="margin-top:.4em;">
+          ¿Por qué el Falcon 9 es reutilizable?
+        </div>
+        <div class="bubble ai">
+          El Falcon 9 usa un propulsor de primer estadio que aterriza verticalmente gracias a sus motores Merlin y aletas de titanio. SpaceX ha reutilizado propulsores hasta <strong>20+ veces</strong>, reduciendo el coste por lanzamiento de ~$60M a ~$40M…
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 13 — COSTES
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Económico</div>
+  <h2>Costes de la Plataforma</h2>
+  <div class="line"></div>
+
+  <div class="g2" style="margin-top:.8rem; align-items:start;">
+
+    <div class="card">
+      <div class="card-top green"></div>
+      <h3 style="color:var(--success); font-size:.8em; margin-bottom:.6em;">🟢 Infraestructura Actual</h3>
+      <table class="ctable">
+        <tr><th>Componente</th><th>Herramienta</th><th>Coste/mes</th></tr>
+        <tr><td>Dashboard</td><td>Streamlit Cloud</td><td class="free">$0</td></tr>
+        <tr><td>LLM / IA</td><td>Groq API (LLaMA)</td><td class="free">$0</td></tr>
+        <tr><td>Datos lanzamientos</td><td>Launch Library 2</td><td class="free">$0</td></tr>
+        <tr><td>Datos SpaceX</td><td>SpaceX API</td><td class="free">$0</td></tr>
+        <tr><td>Datos meteo</td><td>Open-Meteo</td><td class="free">$0</td></tr>
+        <tr><td>Orquestación</td><td>Docker CE</td><td class="free">$0</td></tr>
+        <tr><td>Procesamiento</td><td>Apache Spark (local)</td><td class="free">$0</td></tr>
+        <tr>
+          <td colspan="2" class="total">TOTAL</td>
+          <td class="total free">$0 /mes</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-top orange"></div>
+      <h3 style="color:var(--warning); font-size:.8em; margin-bottom:.6em;">🔶 Estimación a Escala Productiva</h3>
+      <table class="ctable">
+        <tr><th>Componente</th><th>Servicio Cloud</th><th>Coste/mes</th></tr>
+        <tr><td>Spark cluster</td><td>AWS EMR / GCP Dataproc</td><td class="scale">~$150</td></tr>
+        <tr><td>Storage</td><td>S3 / GCS</td><td class="scale">~$20</td></tr>
+        <tr><td>Dashboard</td><td>EC2 t3.medium</td><td class="scale">~$35</td></tr>
+        <tr><td>IA (alta demanda)</td><td>Groq Pro o Claude</td><td class="scale">~$50</td></tr>
+        <tr><td>Networking / CDN</td><td>CloudFront / LB</td><td class="scale">~$15</td></tr>
+        <tr>
+          <td colspan="2" class="total">TOTAL estimado</td>
+          <td class="total scale">~$270/mes</td>
+        </tr>
+      </table>
+      <p style="font-size:.47em; color:var(--muted); margin-top:.5em;">
+        * Para 10.000 usuarios activos con ingesta diaria automatizada
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 14 — STACK TECNOLÓGICO
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Tecnología</div>
+  <h2>Stack Tecnológico</h2>
+  <div class="line"></div>
+  <br>
+
+  <div class="g2" style="font-size:.85em; align-items:start;">
+
+    <div>
+      <div class="card" style="margin-bottom:.7rem;">
+        <div class="card-top orange"></div>
+        <h3 style="font-size:.75em; margin-bottom:.5em;">⚙️ Backend & Procesamiento</h3>
+        <div class="techgrid" style="margin:0;">
+          <span class="badge badge-orange">Python 3.11</span>
+          <span class="badge badge-orange">Apache Spark 3.x</span>
+          <span class="badge badge-orange">PySpark</span>
+          <span class="badge badge-orange">Docker</span>
+          <span class="badge badge-orange">docker compose</span>
+          <span class="badge badge-orange">httpx</span>
+          <span class="badge badge-orange">requests</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top green"></div>
+        <h3 style="font-size:.75em; margin-bottom:.5em;">🤖 Inteligencia Artificial</h3>
+        <div class="techgrid" style="margin:0;">
+          <span class="badge badge-green">LLaMA 3.3 70B</span>
+          <span class="badge badge-green">Groq API</span>
+          <span class="badge badge-green">Streaming SSE</span>
+          <span class="badge badge-green">RAG (contexto)</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:.7rem;">
+        <div class="card-top"></div>
+        <h3 style="font-size:.75em; margin-bottom:.5em;">📊 Dashboard & Visualización</h3>
+        <div class="techgrid" style="margin:0;">
+          <span class="badge badge-blue">Streamlit 1.28</span>
+          <span class="badge badge-blue">Plotly Express</span>
+          <span class="badge badge-blue">Plotly Graph Objects</span>
+          <span class="badge badge-blue">Pandas 2.0</span>
+          <span class="badge badge-blue">NumPy</span>
+          <span class="badge badge-blue">PyArrow</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top silver"></div>
+        <h3 style="font-size:.75em; margin-bottom:.5em;">💾 Almacenamiento & Formato</h3>
+        <div class="techgrid" style="margin:0;">
+          <span class="badge badge-silver">Apache Parquet</span>
+          <span class="badge badge-silver">JSONL / JSON</span>
+          <span class="badge badge-silver">Hive Partitioning</span>
+          <span class="badge badge-silver">Docker Volumes</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 15 — RESULTADOS & KPIs
+════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="sec-label">Resultados</div>
+  <h2>Resultados del Proyecto</h2>
+  <div class="line"></div>
+
+  <div class="g4" style="margin-top:.9rem;">
+    <div class="card" style="text-align:center;">
+      <div class="card-top"></div>
+      <div class="stat stat-lg glow" style="margin:.3em 0;">1.500+</div>
+      <div class="stat-lbl">Registros de costes</div>
+      <div class="stat-sub">generados y analizados</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top gold"></div>
+      <div class="stat stat-lg glow-gold" style="margin:.3em 0; color:var(--gold);">10</div>
+      <div class="stat-lbl">Pestañas analíticas</div>
+      <div class="stat-sub">en el dashboard</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top green"></div>
+      <div class="stat stat-lg glow-green" style="margin:.3em 0; color:var(--success);">3</div>
+      <div class="stat-lbl">APIs integradas</div>
+      <div class="stat-sub">y unificadas</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top orange"></div>
+      <div class="stat stat-lg glow-orange" style="margin:.3em 0; color:var(--warning);">$0</div>
+      <div class="stat-lbl">Coste infraestructura</div>
+      <div class="stat-sub">100% gratuito</div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:.7rem; font-size:.85em;">
+    <div class="card">
+      <div class="card-top"></div>
+      <h3 style="font-size:.75em; margin-bottom:.5em;">✅ Objetivos Cumplidos</h3>
+      <ul style="font-size:.54em;">
+        <li>Pipeline end-to-end funcional con un solo comando</li>
+        <li>Dashboard interactivo desplegado en cloud público</li>
+        <li>Análisis histórico 2010–2025 con 50+ agencias</li>
+        <li>Asistente IA con conocimiento del dominio espacial</li>
+        <li>Simulador de éxito con factores meteorológicos</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-top silver"></div>
+      <h3 style="font-size:.75em; margin-bottom:.5em;">🔮 Trabajo Futuro</h3>
+      <ul style="font-size:.54em;">
+        <li>Ingesta automática diaria (cron / Airflow)</li>
+        <li>Modelo ML real con scikit-learn / XGBoost</li>
+        <li>Alertas de lanzamientos próximos (push)</li>
+        <li>Base de datos relacional (PostgreSQL)</li>
+        <li>Análisis de sentimiento en redes sociales</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SLIDE 16 — CONCLUSIÓN
+════════════════════════════════════════ -->
+<section data-transition="fade">
+  <div style="text-align:center; padding:1rem 0 .5rem;">
+    <div style="font-size:2.5em;">🚀</div>
+    <h1 class="glow" style="font-size:1.7em; margin:.3em 0;">Space Launches<br>Intelligence Platform</h1>
+    <div class="line"></div>
+    <p style="font-size:.65em; color:var(--muted); margin:.6em auto; max-width:600px;">
+      Una plataforma <strong style="color:var(--text);">end-to-end</strong> que demuestra cómo la ingeniería de datos, el Big Data y la IA
+      pueden transformar datos dispersos en <strong style="color:var(--accent);">inteligencia accionable</strong>.
+    </p>
+  </div>
+
+  <div class="g3" style="margin-top:.6rem; font-size:.9em;">
+    <div class="card" style="text-align:center;">
+      <div class="card-top orange"></div>
+      <span style="font-size:1.5em;">⚡</span>
+      <h3 style="font-size:.7em; margin:.3em 0;">Big Data</h3>
+      <p style="font-size:.52em; color:var(--muted);">Apache Spark + Medallion Architecture</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top"></div>
+      <span style="font-size:1.5em;">📊</span>
+      <h3 style="font-size:.7em; margin:.3em 0;">Visualización</h3>
+      <p style="font-size:.52em; color:var(--muted);">10 análisis interactivos en Streamlit</p>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div class="card-top green"></div>
+      <span style="font-size:1.5em;">🤖</span>
+      <h3 style="font-size:.7em; margin:.3em 0;">Inteligencia IA</h3>
+      <p style="font-size:.52em; color:var(--muted);">LLaMA 3.3 70B + Simulador</p>
+    </div>
+  </div>
+
+  <div style="margin-top:1.2rem; text-align:center;">
+    <div style="font-size:.55em; color:var(--muted); margin-bottom:.4em;">Disponible en</div>
+    <span class="badge badge-blue" style="font-size:.55em; margin:.2em;">
+      🌐 6edvj2y5yvekaoycybfi69.streamlit.app
+    </span>
+    <span class="badge badge-silver" style="font-size:.55em; margin:.2em;">
+      📦 github.com/JuanmiiVg/tfg-space-launches-dashboard
+    </span>
+  </div>
+</section>
+
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  transition: 'slide',
+  transitionSpeed: 'default',
+  backgroundTransition: 'fade',
+  controls: true,
+  controlsTutorial: false,
+  progress: true,
+  slideNumber: 'c/t',
+  center: true,
+  width: 1280,
+  height: 720,
+  margin: 0.04,
+  plugins: [],
+});
+</script>
+</body>
+</html>
